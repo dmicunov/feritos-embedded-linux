@@ -1,0 +1,226 @@
+\documentclass[11pt]{article}
+\usepackage[croatian]{babel}  % Croatian typographical rules and hyphenation patterns
+\usepackage[utf8]{inputenc}  	% Encoding of Croatian characters
+\usepackage[T1]{fontenc}
+\usepackage{ae,aecompl}     	% Type 1 fonts, similar to Computer Modern
+
+\usepackage{microtype}				% Improves spacing
+
+\usepackage{booktabs}					% Nice looking tables
+\usepackage{enumerate}				% Additional options for listing of items in enumerate environment
+\usepackage{algorithm2e}			% Writing pseudo-code
+\usepackage{todonotes}				% Adding todo items
+\usepackage{dirtree}					% Simple display of directory tree
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,
+    urlcolor=cyan,
+}
+\urlstyle{same}
+\usepackage{graphics}
+\title{
+	\Large Sveučilište Josipa Jurja Strossmayera u Osijeku \\
+	Fakultet elektrotehnike, računarstva i informacijskih tehnologija \\
+	\vspace{4cm}
+	\Large Kolegij: Linux u ugradbenim sustavima \\
+	\vspace{4cm}
+	\Large \textbf{Laboratorijska vježba 1: Uvod u Linux okruženje}
+	}
+\date{}
+\begin{document}
+\maketitle
+\thispagestyle{empty}
+\newpage
+
+\section{Uvod}
+Ciljevi vježbe: Upoznavanje s radom u terminalu. Rad s upraviteljem paketa.
+Rad s git sustavom za kontrolu verzije dokumenata. Struktura OS-a i manipulacija datotekama. Korištenje tekstualnog
+editora. Prevođenje i pokretanje programa. Korištenje mrežnih protokola.
+
+\section{Pokretanje operacijskog sustava. Pokretanje terminala}
+Nakon uključivanja računala u izborniku \textit{boot} sustava izaberite
+\textit{Ubuntu}. Korisničko ime je \textit{rtrk}, a lozinka \textit{rtrk}.
+Pričekajte da se pokrene operacijski sustav. Na ekranu će se pojaviti
+grafičko sučelje. Upoznajte se s grafičkim sučeljem. Primjerice, pokušajte
+pronaći status Ethernet veze vašeg računala.
+\newline
+\newline
+Pritiskom na tipku \textit{Super} (tipka lijevo od \textit{Alt}, tzv.
+\textit{Windows} tipka) otvara se \textit{Search} u koji zatim upišete
+ \textit{terminal} i pritisnite tipku enter. Pokrenit će se terminal u kojem je
+ aktivan naredbeni redak, tj. moguće je upisivati naredbe u njega i pritiskom
+ na tipku \textit{Enter} započeti izvršavanje unešene naredbe. Naredbe se
+ izvršavaju uz pomoć \textit{bash} ljuske (engl. \textit{shell}). U isto
+ vrijeme moguće je imati i više pokrenutih terminala (korisno u mnogim
+ situacijama). Nakon pokretanja terminala, naredbena ljuska je pozicionirana
+ u vašem \textit{home} direktoriju. Provjerite ovo upisom naredbe \textit{pwd}.
+\newline
+\newline
+\textbf{Napomena}: Prilikom pisanja naredbi koristite tipku \textit{Tab} za
+ dovršavanje naredbi, putanja, imena datoteka i sl. jer ćete na taj način
+ izbjeći moguće sintaksne pogreške.
+ \section{Korištenje upravitelja paketa}
+Registrirajte se na stranici \url{gitlab.com} (preporuča se korisničko ime
+ oblika \textit{imeprezime} ili \textit{xprezime} pri čemu je \textit{x} prvo
+ slovo imena). Po potrebi napravite osnovnu konfiguraciju računa (npr.
+ kreiranje \textit{SSH} ključeva). Napravite \textit{fork}
+ \textit{embedded\_linux} projekta na adresi
+ \url{https://gitlab.com/rgrbic/embedded\_linux.git}.
+ \newline
+ \newline
+ Klonirajte repozitorij \textit{embedded\_linux} na PC računalo koristeći
+ naredbu \textit{git clone}. Napravite granu \textit{rad\_na\_vjezbi} pomoću
+ naredbe \textit{git branch –b} i odmah se prebacite u nju.
+ \section{Kretanje kroz direktorije i prikaz sadržaja direktorija}
+Sadržaj home direktorija izlistajte naredbom \textit{ls}. Pomoću naredbe
+ \textit{man ls} provjerite koje su sve dostupne opcije ove naredbe. Izlistajte
+ sadržaj direktorija pomoću opcija \textit{-l}, \textit{-a}. Kombiniraje obje
+ opcije u istoj naredbi. Što pružaju ove opcije prilikom prikaza sadržaja
+ direktorija? Kako se označavaju direktoriji, a kako datoteke? Što predstavlja
+ . ispred imena?
+\newline
+\newline
+Pozicionirajte se u \textit{/home/rtrk/embedded\_linux/LV1/resources}
+ direktorij. Izlistajte samo datoteke/direktorije koji počinju s malim slovom.
+ Izlistajte sve datoteke koje završavaju s \textit{.txt}. Izlistajte sve
+ datoteke koje ne završavaju s \textit{.txt}.
+\newline
+\newline
+Pomoću naredbe \textit{cd} pozicionirajte se u korijenski direktorij. Na koje
+ sve načine to možete učiniti? Prikažite sadržaj korijenskog direktorija.
+ Proučite dobivenu strukturu sustava datoteke.
+\newline
+\newline
+\textit{Linux} sve uređaje vidi kao datoteke. U kojem direktoriju se nalaze
+ uređaji? Iz svog home direktorija, koristeći apsolutnu putanju, prikažite
+ detaljan sadržaj tog direktorija. Prikažite samo uređaje/datoteke koje počinju
+ s malim slovom "d". Možete li zaključiti što predstavljaju izlistane datoteke?
+ \section{Manipulacija datotekama}
+ Pozicionirajte se u \textit{/home/rtrk/embedded\_linux/LV1/resources}
+ direktorij. Kopirajte sve datoteke koje u svom imenu sadrže znak 9 u
+ direktorij \\ \textit{/home/rtrk/embedded\_linux/LV1/resources/test9}.
+ Izbrišite sve datoteke u \textit{/home/rtrk/embedded\_linux/LV1/resources}
+ koje u svom imenu sadrže znak "9". Provjerite rezultate izlistavanjem sadržaja
+ direktorija.
+\newline
+\newline
+Napravite novi direktorij u \textit{/home/rtrk/embedded\_linux/LV1/resources}
+ naziva \textit{Test}. Kopirajte sve datoteke koje imaju u imenu niz
+ \textit{test\_datoteka} u direktorij \textit{Test}. Promijenite naziv
+ direktorija \textit{Test} u \textit{test}. Obrišite direktorij \textit{test}.
+ Provjerite rezultate izlistavanjem sadržaja direktorija.
+ \newline
+ \newline
+Kopirajte direktorij \textit{/home/rtrk/embedded\_linux/LV1} u \\
+ \textit{/home/rtrk/embedded\_linux/LV1\_temp}. Provjerite rezultate
+ izlistavanjem sadržaja direktorija. Obrišite direktorij \textit{LV1\_temp}.
+\newline
+\newline
+Izbrišite sve datoteke koje imaju u imenu niz \textit{test\_datoteka} u
+ direktoriju \textit{/home/rtrk/embedded\_linux/LV1/resources}.
+\newline
+\newline
+Raspakirajte datoteku
+ \textit{/home/rtrk/embedded\_linux/LV1/resources/mbox.txt.bz2}. Spremite
+ stanje repozitorija u lokalnu bazu kao i na udaljeno računalo pomoću
+ \textit{git} naredbi \textit{commit} i \textit{push}. Prilikom spremanja
+ stanja pomoću \textit{commit} naredbe napišite odgovarajuću poruku.
+
+\section{Prikaz sadržaja datoteka. Editiranje datoteka. Prava}
+Prikažite sadržaj datoteke \textit{mbox.txt} pomoću naredbi \textit{cat},
+ \textit{more} i \textit{less}. Prikažite prvih 20 odnosno posljednjih 20
+ redaka ove datoteke. Po potrebi promijenite prava nad datotekom
+ \textit{mbox.txt}.
+\newline
+\newline
+Prikažite sve email adrese koje se pojavljuju u datoteci
+ \textit{mbox-short.txt}. Spremite sve pronađene email adrese u datoteku
+ \textit{emails.txt}. Promijenite prava datoteke \textit{emails.txt} tako da je
+ moguće samo čitanje datoteke od svih korisnika.
+\newline
+\newline
+Pronađite email adrese u datoteci \textit{mbox.txt} i spremite ih u
+ \textit{emails1.txt}. Usporedite datoteke \textit{emails.txt} i
+ \textit{emails1.txt}. Potražite brojeve u svakoj datoteci u direktoriju \\
+ \textit{/home/rtrk/embedded\_linux/LV1/resources/test9} pri čemu rezultat
+ treba prikazati na zaslonu računala. Rezultat trebaju biti brojevi 9, 19, 29,
+ 39… (svaki broj je u zasebnom redu). Zapišite u datoteku \textit{brojevi.txt}
+ rezultate pretraživanja (bez naziva izvorne datoteke). Prikažite sadržaj
+ datoteke \textit{brojevi.txt}. Obrišite direktorij \textit{test9}.
+\newline
+\newline
+Pokrenite nano tekstualni editor. Otvorite datoteku \textit{emails.txt}.
+ Zamijenite znak \textit{@} s praznim znakom.
+\newline
+\newline
+Spremite stanje repozitorija u lokalnu bazu kao i na udaljeno računalo pomoću
+ \textit{git} naredbi \textit{commit} i \textit{push}. Prilikom spremanja
+ stanja pomoću \textit{commit} naredbe napišite odgovarajuću poruku.
+ \section{Prevođenje i pokretanje programa}
+ Prevedite programe \textit{cipher\_encryption.c} i
+ \textit{cipher\_decryption.c} pomoću \textit{gcc} na način da se generiraju
+ izvršne datoteke \textit{enrypt} i \textit{decrypt}. Šifrirajte poruku
+ „Uvod u Linux“ pomoću generirane izvršne datoteke \textit{encrypt}. Koristite
+ ključ 8. Dešifrirajte poruku pomoću \textit{decrypt} izvršne datoteke.
+ Izmijenite izvorni kod tako \textit{cipher\_encryption.c} da se rezultat
+ sprema u datoteku pod nazivom \textit{poruka.txt} odnosno da program
+ \textit{cipher\_decryption.c} čita i dešifrira tekst iz datoteke
+ \textit{poruka.txt}. Prevedite promijenjeni izvorni kod.
+\newline
+\newline
+Pokušajte prevesti izvorni kod s uključenom opcijom \textit{-Wall}. Zašto
+ \textit{C} funkcija \textit{gets} nije sigurna? Kako biste riješili ovaj
+ problem?
+\newline
+\newline
+Za sve generirane datoteke kao i izvorni kod promijenite prava tako da ih
+ ostali korisnici ne mogu mijenjati, čitati niti izvršavati.
+\newline
+\newline
+Spremite stanje repozitorija u lokalnu bazu kao i na udaljeno računalo pomoću
+ \textit{git} naredbi \textit{commit} i \textit{push}. Prilikom spremanja
+ stanja pomoću \textit{commit} naredbe napišite odgovarajuću poruku.
+
+ \section{Dohvaćanje datoteka pomoću \textit{wget}. \textit{SSH} komunikacija}
+Preuzmite \textit{HTML} datoteku s \textit{URL}-a \\
+\url{https://www.ferit.unios.hr/studiji/sveucilisni-diplomski-studij} pomoću
+ naredbe \textit{wget}. Pomoću naredbe \textit{grep} prikažite sve redove u
+ datoteci koji u sebi imaju riječ „programiranje“. Ako naredba ne vraća nikakav
+ rezultat, provjerite pomoću \textit{man grep} kako čitati binarne datoteke kao
+ da su tekst.
+\newline
+\newline
+Naredna vježba radi se u paru. Potrebno je ostvariti \textit{SSH} vezu između
+ dva računala. Na jednom računalu potrebno je instalirati
+ \textit{openssh-server}. Na istom računalu potrebno je kreirati novog
+ korisnika. S drugog računala spojiti se \textit{SSH} vezom na računalo na
+ kojem se nalazi \textit{SSH} server pomoću podataka za kreiranog korisnika.
+ Pokretanjem programa \textit{encrpyt} koji se nalazi u
+ \textit{/home/rtrk/embedded\_linux/LV1/resources/} ostaviti šifriranu poruku
+ korisniku \textit{rtrk} u datoteci \textit{poruka.txt}. Usmeno razmijeniti
+ ključ za šifriranje. Korisnik \textit{rtrk} na serveru treba dešifrirati
+ poruku.
+
+\section{Spremanje rada}
+Vratite se u glavnu granu git sustava pomoću naredbe
+ \textit{git checkout master}. Sve naredbe koje ste unosili tijekom rada na
+ vježbi spremite u odgovarajuću datoteku pomoću naredbe:
+\newline
+\newline
+\textit{history > <vase\_ime\_prezime>.txt} (npr.
+\textit{history > pero\_peric.txt})
+\newline
+\newline
+Datoteku prebacite u \textit{/home/rtrk/embedded\_linux/LV1/solutions/}.
+ Spremite promjene u lokani repozitorij pomoću naredbe \textit{git commit} kao
+ i na vaš udaljeni račun pomoću \textit{git push –u origin master}.Napravite
+ „merge request“ na \textit{Gitlab} stranici kako bi se vaša datoteka
+ dodala u izvorni repozitorij \textit{embedded\_linux}.
+ \section{Korisne naredbe}
+Sljedeće naredbe su korisne i potrebno ih je znati: \textit{ls, grep, pwd, cd,
+ mkdir, rm, cp, apt-get, diff, git push, git commit, git checkout, git pull,
+ cat, more, less, nano, chown}.
+
+\end{document}
