@@ -1,0 +1,88 @@
+\documentclass[11pt]{article}
+\usepackage[english]{babel}  % Croatian typographical rules and hyphenation patterns
+\usepackage{ae,aecompl}     	% Type 1 fonts, similar to Computer Modern
+
+\usepackage{microtype}				% Improves spacing
+
+\usepackage{booktabs}					% Nice looking tables
+\usepackage{enumerate}				% Additional options for listing of items in enumerate environment
+\usepackage{algorithm2e}			% Writing pseudo-code
+\usepackage{todonotes}				% Adding todo items
+\usepackage{dirtree}					% Simple display of directory tree
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,
+    urlcolor=cyan,
+}
+\urlstyle{same}
+\usepackage{graphics}
+\title{
+	\Large Josip Juraj Strossmayer University of Osijek \\
+	Faculty of Electrical Engineering, Computer Science and Information
+	 Technologies\\
+	\vspace{4cm}
+	\Large Course: Linux in Embedded Systems \\
+	\vspace{4cm}
+	\Large \textbf{Laboratory exercise 1: Introduction to Linux environment}
+	}
+\date{}
+\begin{document}
+\maketitle
+\thispagestyle{empty}
+\newpage
+
+\section{Introduction}
+Exercise goals: Getting familiar with terminal. Working with package manager.
+ Using Git version-control system. OS structure and file manipulation.
+ Using a text editor. Compiling and running a program. Using network protocols.
+
+\section{Booting operating system. Running a terminal}
+After turning on computer, choose Ubuntu in boot menu. Username is
+ \textbf{rtrk} and password is \textbf{rtrk}. Wait for the OS to boot.
+ A graphical interface should appear on the screen. Get acquainted with the
+ graphic interface. For example, try to find the Ethernet connection status
+ of your computer.
+ \newline
+ \newline
+ Pressing the \textit{Super} key (the key to the left of the \textit{Alt} key,
+ the so-called \textit{Windows} key) opens \textit{Search} into which you then
+ type in the terminal and press enter. It will launch the terminal where the
+ command line is active, i.e. it is possible to type commands and press
+ \textit{Enter} to execute the command entered. The commands are executed with
+ the help of a \textit{Bash} shell. At the same time it is possible to have
+ multiple running terminals (useful in many situations). After starting the
+ terminal, the command shell is positioned in your home directory. Check this
+ by typing the \textit{pwd} command.
+\newline
+\newline
+\textbf{Note}: when writing commands, use the \textit{Tab} key to complete
+commands, paths, filenames, etc. to avoid possible syntax errors.
+
+\section{Using package manager}
+Learn how to use the \textit{apt-get} package manager using the built-in
+ help system (\textit{man apt-get}). Install git version-control system using
+ the \textit{apt-get} tool. Set up your email address and username
+using the git config command.
+
+\section{Creating Gitlab account}
+Register at \url{gitlab.com} (username form of \textit{namesurname} or
+ \textit{xsurname} where {x} is the first letter of your name is recommended).
+ If necessary, make a basic account configuration (e.g. create SSH keys). Make
+ a fork of \textit{embedded\_linux} project from
+ \url{https://gitlab.com/rgrbic/embedded\_linux.git}.
+\newline
+\newline
+Clone the \textit{embedded\_linux} repository on your PC using the command
+ \textit{git clone}. Create a new branch \textit{exercise\_work} using the
+ \textit{git branch –b} command and checkout it immediately.
+
+\section{Directory navigation and directory contents}
+List the contents of the home directory with the \textit{ls} command. Using
+ the \textit{man ls} command check all available options for this command. List
+ the contents of the directory using the \textit{-l}, \textit{-a} options. How
+ How to combine both options at the same time? What do these options provide
+ when viewing directory contents? How are directories labeled
+ and how files? What does \textit{.} represent in front of the name?
+\end{document}
