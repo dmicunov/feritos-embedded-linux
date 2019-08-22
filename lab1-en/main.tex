@@ -81,8 +81,142 @@ Clone the \textit{embedded\_linux} repository on your PC using the command
 \section{Directory navigation and directory contents}
 List the contents of the home directory with the \textit{ls} command. Using
  the \textit{man ls} command check all available options for this command. List
- the contents of the directory using the \textit{-l}, \textit{-a} options. How
+ the contents of the directory using the \textit{-l}, \textit{-a} options.
  How to combine both options at the same time? What do these options provide
  when viewing directory contents? How are directories labeled
  and how files? What does \textit{.} represent in front of the name?
+ \newline
+ \newline
+Position yourself in the \textit{/home/rtrk/embedded\_linux/LV1/} resources
+ directory. List only files or directories that begin with a lowercase letter.
+ List all files ending in \textit{.txt}. List all files that do not finish
+ with \textit{.txt}.
+\newline
+\newline
+Using \textit{cd} command go to the root directory. Using which ways you can do
+ that? Display the contents of the root directory. Study the resulting file
+ system structure.
+\newline
+\newline
+\textit{Linux} sees all devices as files. In which directory are the devices
+ located? Display the detailed contents of that directory from your
+ \textit{home} directory, using the absolute path. Only show devices/files that
+ start with a small one the letter 'd'. Can you tell what the listed files
+ represent?
+\section{Manipulating files}
+Go to directory \textit{/home/rtrk/embedded\_linux/LV1/resources}.
+ Copy any files that contain the '9' character in their name to the \\
+ \textit{/home/rtrk/embedded\_linux/LV1/resources/test9} directory. Delete all
+ files in \textit{/home/rtrk/embedded\_linux/LV1/resources} that contain a
+ character in their name '9'. Check the results by listing the contents of the
+ directory.
+\newline
+\newline
+Create a new directory in \textit{/home/rtrk/embedded\_linux/LV1/resources}
+ called \textit{Test}. Copy all the files that have the name of the
+ \textit{test\_datoteka} series into the \textit{Test} directory. Change the
+ name of the \textit{Test} directory to \textit{test}. Delete the directory
+ \textit{test}. Check the results by listing the contents of the directory.
+\newline
+\newline
+Copy the \textit{/home/rtrk/embedded\_linux/LV1} directory to \\
+\textit{/home/rtrk/embedded\_linux/LV1\_temp}. Check results by listing
+ directory content. Delete the \textit{LV1\_temp} directory.
+\newline
+\newline
+Delete any files that have the name of a series of \textit{test\_datoteka} in
+ the directory \textit{/home/rtrk/embedded\_linux/lv1/resources}.
+\newline
+\newline
+Unzip the \textit{/home/rtrk/embedded\_linux/LV1/resources/mbox.txt.bz2} file.
+ Save the repository state by using \textit{Git} commands \textit{commit} and
+ \textit{push}. When saving a state using \textit{commit} command write the
+ appropriate message.
+\section{File contents. Editing files. Permissions}
+Display the contents of the \textit{mbox.txt} file using the \textit{cat},
+ \textit{more}, and \textit{less} commands. Display the first 20 and last 20
+ lines of this file. If necessary change the rights over the
+ \textit{mbox.txt} file.
+\newline
+\newline
+Display all email addresses that appear in the \textit{mbox-short.txt} file.
+ Save all found email addresses in \textit{emails.txt} file. Change the
+ permissions of \textit{emails.txt} file so the users can only read the file.
+\newline
+\newline
+Find the email addresses in the \textit{mbox.txt} file and save them in
+ \textit{emails1.txt}. Compare \textit{emails.txt} and \textit{emails1.txt}.
+ Look for the numbers in each file in the directory
+ \textit{/home/rtrk/embedded\_linux/LV1/resources/test9} and print the numbers.
+ The result should be numbers 9, 19, 29, 39 etc. (each number is in a separate
+ row). Write the results in the file \textit{numbers.txt} (without source file
+ name). Display the contents of the file \textit{brojevi.txt}. Delete the
+ \textit{test9} directory.
+\newline
+\newline
+Start the \textit{nano} text editor. Open the \textit{emails.txt} file. Replace
+ '@' character with a blank character.
+\newline
+\newline
+Save the repository status using the \textit{commit} and \textit{push}
+ \textit{git} commands. When saving a state using \textit{commit} command write
+ the appropriate commit message.
+\section{Compiling and running programs}
+Compile \textit{cipher\_encryption.c} and \textit{cipher\_decryption.c} using
+ \textit{gcc} and generate encrypt and decrypt executables. Encrypt the message
+ "Introduction to Linux" using the generated encrypt executable file. Use the
+ key '8'. Decrypt the message using the decrypt executable file. Modify the
+ original code of \textit{cipher\_encryption.c} to save the results to a file
+ named \textit{message.txt} and modify \textit{cipher\_decryption.c} to
+ decrypt text from \textit{message.txt}. Translate the modified source code.
+\newline
+\newline
+Try translating the source code with \textit{-Wall} enabled. Why the \textit{C}
+ function \textit{gets} is not safe? How can you solve this problem?
+\newline
+\newline
+ For all generated files as well as the source code, change the permissions so
+that they cannot be modified, read or executed by other users.
+\newline
+\newline
+Save the repository status to your local database as well as to a remote
+ computer using the \textit{Git} \textit{commit} and \textit{push} commands.
+ When saving a state using the \textit{commit} command write the appropriate
+ message.
+\section{Fetching files with \textit{wget}. \textit{SSH} communication}
+Download the HTML file from the URL
+ \url{https://www.ferit.unios.hr/studiji/sveucilisni-diplomski-studij} using
+ \textit{wget}. Use the grep command to display all rows in a file that
+ do not contain word "programiranje". If the command does not return any
+ result, check with \textit{man grep} how to read binaries as if they were
+ text.
+\newline
+\newline
+The next exercise is done in pairs. An \textit{SSH} connection is required
+ between two computers. An \textit{opensh-server} must be installed on one
+ computer. You need to create a new user on the same computer. From another
+ computer connect using the \textit{SSH} connection to a computer running the
+\textit{SSH server} using the data for the created user. By running the
+\textit{encrpyt} program which located in
+\textit{/home/rtrk/embedded\_linux/LV1/resources/} leave encrypted message
+ to a \textit{rtrk} user in file \textit{message.txt}. Exchange the encryption
+key orally. The \textit{rtrk} user on the server needs to decrypt the message.
+\section{Saving work}
+Return to the git main branch using the \textit{git checkout master} command.
+ Save all the commands you entered while working on the exercise to the file
+ using command:
+\newline
+\newline
+\textit{history} > <your\_surname.txt> (e.g. \textit{history} > john\_smith.txt)
+\newline
+\newline
+Transfer the file to \textit{/home/rtrk/embedded\_linux/LV1/solutions/}. Save
+ changes to the local repository using the \textit{git commit} command as well
+ as yours remote account with \textit{git push -u origin master}. Create merge
+ request on the Gitlab page to add your file to the original repository
+ \textit{embedded\_linux}.
+\section{Useful commands}
+The following commands are useful: \textit{ls, grep, pwd, cd, mkdir, rm, cp,
+ apt-get, diff, git push, git commit, git checkout, git pull, cat, more, less,
+ nano, chown}.
 \end{document}
