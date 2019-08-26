@@ -15,6 +15,8 @@
 \usepackage{graphicx}
 \usepackage{subfig}
 \usepackage{caption}
+\usepackage{listings}
+
 \graphicspath{ {./images/} }
 
 \hypersetup{
@@ -163,5 +165,92 @@ Osim samog Raspberry Pi računala, potrebna je različita dodatna oprema ovisno
     \caption{Raspberry Pi dodatna oprema}%
     \label{fig:oprema1}%
 \end{figure}
+
+\section{Osnovne postavke}
+Ako na razvojnom računalu nemate vaš repozitorij \texttt{embedded\_linux},
+ najprije ga klonirajte odgovarajućom naredbom s vašeg Gitlab računa u vaš
+ \texttt{home} direktorij. Pozicionirajte se u direktorij
+ \texttt{/home/rtrk/embedded\_linux}. Zatim povucite moguće promjene iz
+ izvornog repozitorija pomoću naredbe:
+\begin{lstlisting}[language=bash]
+git remote add upstream
+	https://gitlab.com/rgrbic/embedded_linux
+git fetch upstream
+git merge upstream/master
+\end{lstlisting}
+Instalirajte potrebne alate na razvojno računalo:
+\begin{lstlisting}[language=bash]
+sudo apt-get install gcc-arm-linux-gnueabihf
+\end{lstlisting}
+
+\section{Buildroot}
+\textit{Build} sustav je skup alata koji omogućuje automatizaciju procesa
+ izgradnje Linuxa za ugradbene računalne sustave. Preciznije rečeno,
+ \textit{build} sustavi omogućuju izgradnju \textit{toolchain} alata,
+ \textit{bootloadera}, \textit{kernela} i \textit{root} datotečnog sustava na
+ temelju izvornog koda. Neki od poznatijih build sustava su Buidroot, Yocto,
+ PTXdist i OpenEmbedded. \\
+\newline
+Za potrebe izgradnje Linuxa za raspoloživo Raspberry Pi računalo koristit će se
+ \textit{Buildroot} alat. Otvorite terminal i preuzmite \textit{Buildroot}
+ pomoću naredbe:
+\begin{lstlisting}[language=bash]
+git clone https://github.com/buildroot/buildroot
+\end{lstlisting}
+Nakon što se postupak kloniranja na vaše razvojno računalo završi, uđite u
+ kreirani direktorij:
+\begin{lstlisting}[language=bash]
+cd buildroot
+\end{lstlisting}
+Primijetit ćete da ovaj direktorij ima nekoliko poddirektorija (koristite
+ naredbu \texttt{ls}) od kojih su najvažniji (detalji se mogu pogledati na\\
+ \url{https://buildroot.org/downloads/manual/manual.html}):\\
+\newline
+ \texttt{dl}/: sadrži arhive od upstream projekata koje je Buildroot izgradio\\
+\newline
+ \texttt{output}/: ovdje se nalaze svi među i završni rezultati prevođenja
+ izvora\\
+\newline
+\texttt{host}/: ovo su različiti alati koje zahtijeva \textit{Buildroot}, a
+ koji se izvršavaju na host računalu, uključujući izvršne datoteke
+ toolchaina (\textit{output/host/usr/bin})\\
+\newline
+\texttt{images}/: ovo je najvažniji direktorij jer se u njemu nalaze rezultati
+izgradnje (ovisno što je odabrano kod konfiguracije \textit{buildroota} –
+ bootloader, kernel i jedan ili više root datotečnih sustava)\\
+\newline
+\textit{staging}/: ovo je simbolička veza prema \textit{sysrootu toolchaina}\\
+\newline
+\textit{target}/: ovo je gotovo cjeloviti \textit{root} datotečni sustav
+ (međutim nije namijenjen za korištenje kao \textit{root} datotečni sustav na
+ target računalu)\\
+\newline
+\textit{configs}/: ovdje se nalaze predefinirane konfiguracije za različite
+ ploče (npr. \textit{raspberrypi3\_defconfig})\\
+\newline
+\textit{boards}/: ovdje se nalaze različite skripte koje definiraju način
+ generiranja slike cijelog sustava (sdcard.img), post build procedure i sl.\\
+\newline
+Iako se za potrebe izgradnje Linuxa pomoću Buildroota može koristiti\\
+ \texttt{raspberrypi3\_defconfig} koji se dodatno modificira prema željama
+ korisnika naredbom \texttt{make menuconfig|nconfig|xconfig}, u vježbi će se
+ iskoristiti postojeća konfiguracija. Kopirajte
+ \texttt{raspberrypi3\_ferit\_defconfig} datoteku iz repozitorija
+ \texttt{/home/rtrk/embedded\_linux/LV2/resources} u direktorij
+ \texttt{/home/rtrk/buildroot/configs}. Nadalje, kopirajte datoteke\\
+ \texttt{post-build.sh} i \texttt{genimage-raspberrypi3.cfg} u direktorij\\
+ \texttt{/home/rtrk/buildroot/board/raspberrypi}.\\
+\newline
+Učitajte danu konfiguraciju i
+ provjerite što je sve uključeno u nju pokretanjem sljedećih naredbi u
+ direktoriju \texttt{/home/rtrk/buildroot}:
+\begin{lstlisting}[language=bash]
+make raspberrypi3_ferit_defconfig
+make menuconfig
+\end{lstlisting}
+Pokrenite izgradnju pomoću naredbe:
+\begin{lstlisting}[language=bash]
+make
+\end{lstlisting}
 
 \end{document}
