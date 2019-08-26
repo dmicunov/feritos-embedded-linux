@@ -13,6 +13,7 @@
 \usepackage{dirtree}					% Simple display of directory tree
 \usepackage{hyperref}
 \usepackage{graphicx}
+\usepackage{subfig}
 \usepackage{caption}
 \graphicspath{ {./images/} }
 
@@ -88,7 +89,6 @@ imaju \textit{Wi-Fi 802.11n} te \textit{Bluetooth}.
  stvarnim testovima dostiže brzinu 300 Mbit/s, jer dijeli USB 2.0 sabirnicu).
  Posjeduje \textit{dual-band 802.11ac 2.4/5 Ghz Wi-Fi} bežični mrežni standard.
 \newline
-\newline
  Najnoviji model izlazi 2019. godine. Radi se o modelu \textit{Raspberry Pi
  4 Model B}. Hardverski definitivno najjači model Raspberry Pi računala s
  1.5 GHz četverojezgrenim \textbf{ARM Cortex-A72} procesorom, podrškom za
@@ -124,7 +124,7 @@ Tehničke karakteristike Raspberry Pi 3 B: \\
 \textbf{Priključci}: $4\times USB 2.0$, HDMI, 3.5mm analogni priključak,
  Ethernet, \textit{Camera Serial Interface} (CSI), \textit{Display Serial
  Interface} (DSI)
-\begin{figure}[h!]
+\begin{figure}%
 \centering
 \includegraphics[width=0.8\textwidth]{rpi-3-details.jpg}
 \captionsetup{justification=centering}
@@ -136,4 +136,32 @@ Tehničke karakteristike Raspberry Pi 3 B: \\
 \captionsetup{justification=centering}
 \caption{Raspberry Pi 3 GPIO raspored}
 \end{figure}
+
+\clearpage
+\section{Dodatna oprema}
+Osim samog Raspberry Pi računala, potrebna je različita dodatna oprema ovisno
+ o primjeni:
+
+\begin{enumerate}
+	\item napajanje 5V 2A, USB mikro priključak
+	\item mikro SD memorijska kartica, kapaciteta min. 4GB klase A
+	\item pretvornik USB na serijsku komunikaciju u obliku kabela (UART)
+	\item pretvornik USB na Ethernet + Ethernet kabel
+	\item dodatni uređaji za razvoj upravljačkih programa poput Nunchuk
+		 upravljača.
+\end{enumerate}
+
+\begin{figure}%
+    \centering
+    \subfloat[Napajanje]{{\includegraphics[width=4cm]{rpi-charger.jpg}}}%
+    \subfloat[SD kartica]{{\includegraphics[width=4cm]{rpi-sdcard.jpg}}}%
+    \subfloat[USB UART]{{\includegraphics[width=4cm]{rpi-uart.jpg}}}%
+    \qquad
+    \subfloat[USB Ethernet]{{\includegraphics[width=4cm]{rpi-ethernet.jpg}}}%
+    \subfloat[Nunchuk]{{\includegraphics[width=4cm]{rpi-nunchuk.jpg}}}%
+    \subfloat[Kućište]{{\includegraphics[width=4cm]{rpi-case.jpg}}}%
+    \caption{Raspberry Pi dodatna oprema}%
+    \label{fig:oprema1}%
+\end{figure}
+
 \end{document}
