@@ -33,7 +33,7 @@
 	\vspace{4cm}
 	\Large Kolegij: Linux u ugradbenim sustavima \\
 	\vspace{4cm}
-	\Large \textbf{Laboratorijska vježba 2: Upoznavanje s Raspberry Pi 3
+	\Large \textbf{Laboratorijska vježba 2:\\Upoznavanje s Raspberry Pi 3
 	računalom. Izgradnja Linuxa za Raspberry Pi 3}
 	}
 \date{}
@@ -133,10 +133,11 @@ Tehničke karakteristike Raspberry Pi 3 B: \\
 \caption{Raspberry Pi 3 detalji}
 \end{figure}
 \begin{figure}[h!]
-\centering
-\includegraphics[width=0.8\textwidth]{rpi-3-pins.jpg}
-\captionsetup{justification=centering}
-\caption{Raspberry Pi 3 GPIO raspored}
+	\centering
+	\includegraphics[width=0.8\textwidth]{rpi-3-pins.jpg}
+	\captionsetup{justification=centering}
+	\caption{Raspberry Pi 3 GPIO raspored}
+	\label{fig:rpi-gpio}
 \end{figure}
 
 \clearpage
@@ -253,4 +254,94 @@ Pokrenite izgradnju pomoću naredbe:
 make
 \end{lstlisting}
 
+Budući da alat \textit{Buildroot} prvi puta treba dohvatiti sve izvorne kodove
+ različitih komponenata (\textit{toolchain}, \textit{bootloader}, \textit{kernel}
+ i sl.), \textbf{izvođenje ove naredbe može potrajati, ovisno o brzini internet
+ veze i brzini samog razvojnog računala}. U to vrijeme upoznajte se s Raspberry
+ Pi i načinom izgradnje pojedinih komponenata Linuxa.
+\newline
+\newline
+Pronađite na Raspberry Pi ploči 40 pinski header (Slika \ref{fig:rpi-gpio}) te
+ identificirajte pinove za serijsku komunikaciju (RXD, TXD). Spojite pretvornik
+ USB na serijsku vezu na način da povežete:\\
+\newline
+GND pretvornik $\leftrightarrow$ GND Raspberry Pi \\
+TXD pretvornik $\leftrightarrow$ RX0 Raspberry Pi \\
+RXD pretvornik $\leftrightarrow$ TX0 Raspberry Pi \\
+\textbf{\textcolor{red}{(+5V pretvornika ne spajati na Raspberry Pi!)}} \\
+\newline
+Otvorite novi terminal. Instalirajte \textit{picocom} alat za serijsku
+ komunikaciju pomoću naredbe:
+\begin{lstlisting}[language=bash]
+sudo apt-get install picocom
+\end{lstlisting}
+Testirajte serijsku vezu na način da spojite pretvornik na razvojno računalo. U
+ terminalu izvršite naredbu:
+\begin{lstlisting}[language=bash]
+picocom -b 115200 /dev/ttyUSB0
+\end{lstlisting}
+Ako je pretvornik ispravno prepoznat, na ekranu će se ispisati "Terminal ready".
+ Isključite USB pretvornik, u terminalu se treba prekinuti serijska veza. Ako
+ želite napustiti \textit{picocom} bez isključivanja pretvornika iz USB-a,
+ pritisnite Ctrl-a praćeno s Ctrl-x.
+\newline
+\newline
+Nakon što se završi izgradnja Linuxa pomoću alata \textit{Buildroot}, u
+ direktoriju \texttt{/home/rtrk/buildroot/output/images} nalazit će se sljedeće
+ datoteke:
+\newline
+\dirtree{%
+	.1 images.
+	.2 bcm2710-rpi-3-b.dtb.
+	.2 boot.vfat.
+	.2 rootfs.ext2.
+	.2 rootfs.ext4.
+	.2 rpi-firmware.
+	.3 bootcode.bin.
+	.3 cmdline.txt.
+	.3 config.txt.
+	.3 fixup.dat.
+	.3 start.elf.
+	.3 overlays.
+	.2 sdcard.img.
+	.2 u-boot.bin.
+	.2 zImage.
+}%
+Datoteka sdcard.img sadrži sve navedene dijelove Linuxa te ju je potrebno
+ snimiti na mikro SD karticu. Ubacite mikro SD karticu u čitač memorijskih
+ kartica i spojite ga na razvojno računalo (obično /dev/sdX gdje
+ je X slovo a, b, c i sl.). Kopiranje ove datoteke na mikro SD karticu učinite
+ naredbama:
+\begin{lstlisting}[language=bash]
+sudo dd status=progress if=sdcard.img of=/dev/sdx
+sudo sync
+\end{lstlisting}
+Ako se pojave problemi prilikom zapisivanja datoteka na kraticu pomoću
+ prethodnih naredbi, onda se preporuča instalacija alata \textit{GParted} koji
+ je grafički alat za manipulaciju diskovima:
+\begin{lstlisting}[language=bash]
+sudo apt-get install gparted
+\end{lstlisting}
+Nakon instalacije pokrenite alat \textit{Gparted} iz Ubuntu grafičkog okruženja
+ i obrišite sve particije koje se nalaze na vašoj mikro SD kartici
+ (\textbf{\textcolor{red}{Oprez! Budite u potpunosti sigurni da brišete
+ particije na mikro SD kartici, a ne nekog drugog medija za pohranu na računalu
+ kao primjerice hard diska!}}).\\
+\newline
+Kada kopiranje datoteke uspješno završi, vaša mikro SD kartica će imati dvije
+ particije pri čemu će se na prvoj particiji nalaziti datoteke potrebne za
+ učitavanje OS-a (\textit{firmware}, \textit{bootloader} i sam \textit{kernel})
+ dok će se na drugoj particiji nalaziti \textit{root} datotečni sustav.\\
+Sigurno isključite čitač memorijskih kartica iz PC-a, izvadite mikro SD karticu
+ i stavite ju u Raspberry Pi. Povežite PC i Raspberry Pi preko pretvornika USB
+ na serijsku vezu, zatim spojite PC i Raspberry Pi preko USB to Ethernet
+ pretvornika.\\
+Otvorite serijsku vezu u novom terminalu na PC-u pomoću naredbe:
+\begin{lstlisting}[language=bash]
+picocom -b 115200 /dev/ttyUSB0
+\end{lstlisting}
+Spojite napajanje na Raspberry Pi. Nakon nekog vremena trebaju se pojaviti
+ statusne poruke \textit{U-boot bootladera} u terminalu u kojem je otvorena
+ serijska veza te naredbeni redak koji počinje s \texttt{U-boot>}. Pritisnite
+ Enter kako biste zaustavili odbrojavanje odnosno \textit{autoboot}.
 \end{document}
