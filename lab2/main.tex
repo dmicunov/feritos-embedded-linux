@@ -344,4 +344,234 @@ Spojite napajanje na Raspberry Pi. Nakon nekog vremena trebaju se pojaviti
  statusne poruke \textit{U-boot bootladera} u terminalu u kojem je otvorena
  serijska veza te naredbeni redak koji počinje s \texttt{U-boot>}. Pritisnite
  Enter kako biste zaustavili odbrojavanje odnosno \textit{autoboot}.
+
+\section{U-boot konfiguracija}
+Upisivanjem naredbe \texttt{help} u naredbeni redak \textit{U-boota} na ekranu
+ će se ispisati popis dostupnih naredbi. Npr. izlistavanje svih varijable
+ okruženja dobiva se naredbom:
+\begin{lstlisting}[language=bash]
+printenv
+\end{lstlisting}
+Promjena varijable okruženja provodi se pomoću naredbe \texttt{setenv} ili
+ \texttt{editenv}. Na primjer:
+\begin{lstlisting}[language=bash]
+setenv boodelay 4
+\end{lstlisting}
+Pohranite okruženje nakon mijenjanja varijabli kako bi prilikom ponovnog
+ pokretanja \texttt{U-boota} varijable imale postavljene vrijednosti. Pohranite
+ okruženje na mikro SD karticu naredbom:
+\begin{lstlisting}[language=bash]
+saveenv
+\end{lstlisting}
+Kako bi se pokrenuo Linux potrebno je definiriati varijablu okruženja
+ \texttt{bootargs} te definirati \texttt{bootcmd} koja će učitati
+ \texttt{zImage} i odgovarajući \textit{device tree blob} na odgovarajuće
+ adrese:
+\begin{lstlisting}[language=bash]
+setenv bootargs "8250.nr_uarts=1 root=/dev/mmcblk0p2
+console=ttyS0,115200 rootfstype=ext4 elevator=deadline
+fsck.repair=yes rootwait"
+
+setenv bootcmd "fatload mmc 0:1 0x01000000 zImage;
+fatload mmc 0:1 0x2000000 bcm2710-rpi-3-b.dtb;
+bootz 0x01000000 - 0x2000000"
+\end{lstlisting}
+Spremite okruženje pomoću naredbe \texttt{saveenv} i zatim pokrenite Linux
+ naredbom:
+\begin{lstlisting}[language=bash]
+run bootcmd
+\end{lstlisting}
+U terminalu ćete dobiti ispis o podizanju \textit{Linux} kernela i postavljanju
+ \textit{root} datotečnog sustava. Po završetku podizanja dobit ćete redak za
+ prijavu na sustav s imenom \texttt{buildroot}. Koristite korisničko ime
+ \textbf{root}, \textbf{bez lozinke}.
+\begin{lstlisting}[language=bash]
+Welcome to Buildroot
+
+buildroot login: root
+
+buildroot:~#
+\end{lstlisting}
+Datotečni sustav sadrži osnovne naredbe u okviru \textit{BusyBoxa}. Pokušajte
+ izlistati sadržaj direktorija i pronaći \textit{BusyBox}. Kada završite s
+ radom, upišite naredbu
+\begin{lstlisting}[language=bash]
+poweroff
+\end{lstlisting}
+kako biste mogli sigurno isključiti ploču s napajanja. Ponovo uključite
+ napajanje na ploči te kada započne odbrojavanje u \textit{U-bootu} zaustavite
+ ga pritiskom na bilo koju tipku (u slučaju isteka vremena izvršit će se
+ naredba \texttt{bootcmd}).
+
+\section{Kopiranje datoteka korištenjem TFTP protokola i pokretanje sustava}
+Kod razvoja Linux-a česte su promjene na slici kernela što zahtijeva kopiranje
+ slike na mikro SD karticu. Kako bi se izbjeglo učestalo prebacivanje mikro SD
+ kartice iz \textit{Raspberry Pi} u čitač memorijskih kartica i obrnuto, moguće
+ je konfigurirati \textit{U-boot} i razvojno računalo tako da se datoteke
+ prebacuju TFTP (engl. \textit{Trivial File Transfer Protocol}) protokolom.
+ eajprije instalirajte TFTP server na razvojno računalo:
+\begin{lstlisting}[language=bash]
+sudo apt-get install tftpd-hpa
+\end{lstlisting}
+Mrežnim kabelom spojite \textit{Raspberry Pi} i razvojno računalo koristeći
+ USB na Ethernet pretvornik. Spojite Raspberry Pi s razvojnim računalom pomoću
+ pretvornika USB na serijsku vezu. Otvorite terminal i pokrenite
+ \textit{picocom} serijski terminal odgovarajućom naredbom.
+ Spojite napajanje na Raspberry Pi. Pritisnite tipku na računalu kako biste
+ zaustavili automatsko podizanje sustava na Raspberry Pi. Na razvojnom računalu
+ će se pojaviti nova mrežna veza. Postavite ovu mrežnu vezu kao što prikazuje
+ slika \ref{fig:ubuntu-ethernet}. U kartici \textit{IPv4 Settings}, odaberite
+ \textit{Manual} kao metodu kako biste omogućili statičku IP adresu, npr.
+ 192.170.0.1 (naravno, vodite računa da ova adresa pripada drugom mrežnom
+ segmentu u odnosu na glavnu mrežu na koju je razvojno računalo već povezano).
+ Za \textit{Netmask} postavite 24, a polje Gateway ostaviti prazno.
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.8\textwidth]{ubuntu-ethernet.png}
+\captionsetup{justification=centering}
+\caption{Postavljanje nove mrežne veze koja odgovara USB na Ethernet
+ pretvorniku}
+\label{fig:ubuntu-ethernet}
+\end{figure}
+U U-Boot naredbenom retku potrebno je postaviti varijable okruženja koje
+ odgovaraju IP adresi klijenta (Raspberry Pi) i servera (razvojno računalo),
+ npr:
+\begin{lstlisting}[language=bash]
+setenv ipaddr 192.170.0.100
+setenv serverip 192.170.0.1
+\end{lstlisting}
+Sačuvajte ove izmjene na mikro SD karticu naredbom:
+\begin{lstlisting}[language=bash]
+saveenv
+\end{lstlisting}
+Provjerite izmjene pomoću naredbe:
+\begin{lstlisting}[language=bash]
+printenv
+\end{lstlisting}
+Ispitajte radi li ispravno TFTP konekcija. Kreirajte malu tekstualnu datoteku u
+ \texttt{/var/lib/tftpboot} naziva \texttt{file\_example.txt}. Pomoću
+ naredbenog retka \textit{U-boota} izvršite sljedeću naredbu:
+\begin{lstlisting}[language=bash]
+tftp 0x01000000 file_example.txt
+\end{lstlisting}
+Ovom naredbom bi se trebala prebaciti datoteka \texttt{file\_example.txt} s
+ razvojnog računala na Raspberry Pi ploču i to na memorijsku lokaciju
+ \texttt{0x01000000} (ova lokacija pripada DRAM-u na ploči). Verificirajte ovaj
+ upis čitanjem sadržaja s ove adrese:
+\begin{lstlisting}[language=bash]
+md 0x01000000
+\end{lstlisting}
+Provjeriti vezu možete i pomoću naredbe \texttt{ping}. Na Raspberry Pi (tj. u
+ \textit{U-bootu}) izvršite naredbu:
+\begin{lstlisting}[language=bash]
+ping 127.0.0.1
+\end{lstlisting}
+Na razvojnom računalu izvršite naredbu:
+\begin{lstlisting}[language=bash]
+ping 127.0.0.1
+\end{lstlisting}
+Budući da je na Raspberry Pi mreža samo povremeno aktivna, pokušajte gore
+ navedene naredbe izvršiti otprilike u isto vrijeme.
+ U slučaju problema kod prebacivanja datoteke \texttt{file\_example.txt} i
+ komunikacije: \\
+\newline
+1) Provjeriti IP adresu servera i klijenta koje su podešene u \textit{U-bootu}.
+\newline
+2) Pomoću naredbe \texttt{ls /var/lib/tftpboot} provjerite postoji li datoteka
+ koju želite prebaciti.
+\newline
+3) Pokrenite ponovo servis \textit{tftpd-hpa} naredbom: \texttt{sudo service
+ tftpd-hpa restart}.
+\section{Postavljanje NFS Servera i datotečnog sustava}
+Raspakirajte izgrađeni \textit{root} datotečni sustav u odgovarajući direktorij
+ (pretpostavka je da se nalazite u vašem \textit{home} direktoriju):
+\begin{lstlisting}[language=bash]
+sudo tar xvjf buildroot/output/images/rootfs.tar.bz2 -C
+embedded_linux/LV2/solutions/nfsroot
+\end{lstlisting}
+Promijenite prava u dobivenom direktoriju:
+\begin{lstlisting}[language=bash]
+sudo chown -R rtrk embedded_linux/LV2/solutions/nfsroot/root
+\end{lstlisting}
+Instalirajte NFS server pomoću naredbe:
+\begin{lstlisting}[language=bash]
+sudo apt-get install nfs-kernel-server
+\end{lstlisting}
+Izmijenite datoteku \texttt{/etc/exports} kao \textit{root} korisnik tako što
+ ćete dodati narednu liniju:
+\begin{lstlisting}[language=bash]
+/home/rtrk/embedded_linux/LV2/solutions/nfsroot
+<IP_adresa_rpi>(rw,no_root_squash,no_subtree_check)
+\end{lstlisting}
+pri čemu je \texttt{<IP\_adresa\_rpi>} podešena IP adresa \textit{Raspberry Pi}.
+Ponovo pokrenite NFS server pomoću naredbe:
+\begin{lstlisting}[language=bash]
+sudo /etc/init.d/nfs-kernel-server restart
+\end{lstlisting}
+\section{Pokretanje sustava i učitavanje root datotečnog sustava preko NFS-a}
+Pokrenite ploču do U-boot-a. Prije pokretanja jezgre potrebno je definirati
+ koja se konzola koristi i koji će root datotečni sustav biti pokrenut preko
+ NFS-a. Podesite U-boot \texttt{bootagrs} varijablu okruţenja na sljedeći
+ način:
+\begin{lstlisting}[language=bash]
+setenv bootargs "root=/dev/nfs rw ip=<IP_adresa_rpi> 8250.nr_uarts=1
+console=ttyS0,115200
+nfsroot=<IP_adresa_pc>:/home/rtrk/embedded_linux/LV2/solutions/nfsroot"
+
+saveenv
+\end{lstlisting}
+Ako kasnije želite promijeniti postavke, varijable možete mijenjati s:
+\begin{lstlisting}[language=bash]
+editenv bootargs
+\end{lstlisting}
+Sada prebacite sliku jezgre kroz TFTP:
+\begin{lstlisting}[language=bash]
+tftp 0x01000000 zImage
+\end{lstlisting}
+Potrebno je prebaciti i \textit{device tree blob}:
+\begin{lstlisting}[language=bash]
+tftp 0x2000000 bcm2710-rpi-3-b.dtb
+\end{lstlisting}
+Sada možete pokrenuti jezgru:
+\begin{lstlisting}[language=bash]
+bootz 0x01000000 - 0x2000000
+\end{lstlisting}
+Ako je sve u redu, pojaviti će se login prompt (korisnik: root, bez zaporke).
+ Ako jezgra ne uspije podići mrežni datotečni sustav, pojavit će se poruke o
+ greškama u terminalu. Pogledajte i NFS server poruke u \texttt{/var/log/syslog}
+ na razvojnom računalu:
+\begin{lstlisting}[language=bash]
+cat /var/log/syslog
+\end{lstlisting}
+Moţete provjeriti radi li mreţni datotečni sustav na način da u root direktorij
+ mrežnog datotečnog sustava dodate tekstualnu datoteku i u nju upišete
+ proizvoljni tekst:
+\begin{lstlisting}[language=bash]
+sudo nano /home/rtrk/embedded_linux/LV2/solutions/nfsroot/root/proba.txt
+\end{lstlisting}
+Na Raspberry Pi bi se ista datoteka trebala nalaziti u \texttt{/root}
+ direktoriju, npr. izvršite naredbu:
+\begin{lstlisting}[language=bash]
+cat /root/proba.txt
+\end{lstlisting}
+\section{Automatsko pokretanje sustava}
+Kako biste izbjegli upisivanje istih naredbi svaki put kada se uključi ploča,
+ možete koristiti U-Boot \texttt{bootcmd} varijablu:
+\begin{lstlisting}[language=bash]
+setenv bootcmd "tftp 0x01000000 zImage; tftp 0x2000000 bcm2710-rpi-3-b.dtb;
+bootz 0x01000000 - 0x2000000"
+
+saveenv
+\end{lstlisting}
+Slobodno ovo možete promijeniti po potrebi. Npr. ako želite vratiti pokretanje
+ s mikro SD kartice:
+\begin{lstlisting}[language=bash]
+setenv bootargs "8250.nr_uarts=1 root=/dev/mmcblk0p2 console=ttyS0,115200
+rootfstype=ext4 elevator=deadline fsck.repair=yes rootwait"
+
+setenv bootcmd "fatload mmc 0:1 0x01000000 zImage; fatload mmc 0:1
+0x2000000 bcm2710-rpi-3-b.dtb; bootz 0x01000000 - 0x2000000"
+
+saveenv
+\end{lstlisting}
 \end{document}
