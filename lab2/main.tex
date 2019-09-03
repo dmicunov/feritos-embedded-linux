@@ -363,10 +363,9 @@ Pohranite okruženje nakon mijenjanja varijabli kako bi prilikom ponovnog
 \begin{lstlisting}[language=bash]
 saveenv
 \end{lstlisting}
-Kako bi se pokrenuo Linux potrebno je definiriati varijablu okruženja
- \texttt{bootargs} te definirati \texttt{bootcmd} koja će učitati
- \texttt{zImage} i odgovarajući \textit{device tree blob} na odgovarajuće
- adrese:
+Kako bi se pokrenuo Linux potrebno je definirati varijablu okruženja
+ \texttt{bootargs} te definirati\\ \texttt{bootcmd} koja će učitati
+ \texttt{zImage} i odgovarajući \textit{device tree blob} na odgovarajuće adrese:
 \begin{lstlisting}[language=bash]
 setenv bootargs "8250.nr_uarts=1 root=/dev/mmcblk0p2
 console=ttyS0,115200 rootfstype=ext4 elevator=deadline
@@ -376,8 +375,7 @@ setenv bootcmd "fatload mmc 0:1 0x01000000 zImage;
 fatload mmc 0:1 0x2000000 bcm2710-rpi-3-b.dtb;
 bootz 0x01000000 - 0x2000000"
 \end{lstlisting}
-Spremite okruženje pomoću naredbe \texttt{saveenv} i zatim pokrenite Linux
- naredbom:
+Spremite okruženje pomoću naredbe \texttt{saveenv} i zatim pokrenite Linux naredbom:
 \begin{lstlisting}[language=bash]
 run bootcmd
 \end{lstlisting}
@@ -409,7 +407,7 @@ Kod razvoja Linux-a česte su promjene na slici kernela što zahtijeva kopiranje
  kartice iz \textit{Raspberry Pi} u čitač memorijskih kartica i obrnuto, moguće
  je konfigurirati \textit{U-boot} i razvojno računalo tako da se datoteke
  prebacuju TFTP (engl. \textit{Trivial File Transfer Protocol}) protokolom.
- eajprije instalirajte TFTP server na razvojno računalo:
+ Prvo instalirajte TFTP server na razvojno računalo:
 \begin{lstlisting}[language=bash]
 sudo apt-get install tftpd-hpa
 \end{lstlisting}
@@ -475,7 +473,8 @@ Budući da je na Raspberry Pi mreža samo povremeno aktivna, pokušajte gore
  U slučaju problema kod prebacivanja datoteke \texttt{file\_example.txt} i
  komunikacije: \\
 \newline
-1) Provjeriti IP adresu servera i klijenta koje su podešene u \textit{U-bootu}.
+1) Provjeriti IP adresu servera i klijenta koje su postavljene u
+ \textit{U-bootu}.
 \newline
 2) Pomoću naredbe \texttt{ls /var/lib/tftpboot} provjerite postoji li datoteka
  koju želite prebaciti.
@@ -503,7 +502,7 @@ Izmijenite datoteku \texttt{/etc/exports} kao \textit{root} korisnik tako što
 /home/rtrk/embedded_linux/LV2/solutions/nfsroot
 <IP_adresa_rpi>(rw,no_root_squash,no_subtree_check)
 \end{lstlisting}
-pri čemu je \texttt{<IP\_adresa\_rpi>} podešena IP adresa \textit{Raspberry Pi}.
+pri čemu je \texttt{<IP\_adresa\_rpi>} postavljena IP adresa \textit{Raspberry Pi}.
 Ponovo pokrenite NFS server pomoću naredbe:
 \begin{lstlisting}[language=bash]
 sudo /etc/init.d/nfs-kernel-server restart
@@ -511,7 +510,7 @@ sudo /etc/init.d/nfs-kernel-server restart
 \section{Pokretanje sustava i učitavanje root datotečnog sustava preko NFS-a}
 Pokrenite ploču do U-boot-a. Prije pokretanja jezgre potrebno je definirati
  koja se konzola koristi i koji će root datotečni sustav biti pokrenut preko
- NFS-a. Podesite U-boot \texttt{bootagrs} varijablu okruţenja na sljedeći
+ NFS-a. Postavite U-boot \texttt{bootagrs} varijablu okruženja na sljedeći
  način:
 \begin{lstlisting}[language=bash]
 setenv bootargs "root=/dev/nfs rw ip=<IP_adresa_rpi> 8250.nr_uarts=1
@@ -543,7 +542,7 @@ Ako je sve u redu, pojaviti će se login prompt (korisnik: root, bez zaporke).
 \begin{lstlisting}[language=bash]
 cat /var/log/syslog
 \end{lstlisting}
-Moţete provjeriti radi li mreţni datotečni sustav na način da u root direktorij
+Možete provjeriti radi li mrežni datotečni sustav na način da u root direktorij
  mrežnog datotečnog sustava dodate tekstualnu datoteku i u nju upišete
  proizvoljni tekst:
 \begin{lstlisting}[language=bash]
