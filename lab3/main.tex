@@ -144,7 +144,7 @@ stabla uređaja koje je naš sustav učitao.
 \newline
 Na primjer, možemo provjeriti prisustvo \texttt{nunchuk} čvora u stablu uređaja:
 \begin{lstlisting}
-find /proc/device-tree/ -name ”*nunchuk*”
+# find /proc/device-tree/ -name "*nunchuk*"
 /proc/device-tree/soc/i2c@7e804000/nunchuk@52
 \end{lstlisting}
 Neke od postavki uređaja možemo pročitati pomoću:
@@ -161,17 +161,84 @@ datoteke: \texttt{nunchuk.c} i \texttt{Makefile}.
 \newline
 Struktura \texttt{Makefile} datoteke je standardna. Bitan parametar je
 \texttt{KDIR} koji označava putanju do izvornog koda \texttt{Linux} jezgre.
-
+\newline
+\newline
 \texttt{Makefile} bi trebao izgledati ovako:
 \begin{lstlisting}
 ifneq ($(KERNELRELEASE),)
 obj-m := nunchuk.o
 else
-KDIR := /opt/faks/buildroot/output/build/linux-custom
+KDIR := /home/rtrk/buildroot/output/build/linux-custom
 all:
 	$(MAKE) -C $(KDIR) M=$$PWD
 endif
 \end{lstlisting}
+Unutar \texttt{nunchuk.c} datoteke treba implementirati sljedeće:
+\begin{enumerate}
+	\item probe() i remove() funkcije koje će biti pozvane kada je nunchuk
+pronađen, odnosno uklonjen. Za sada samo iskoristite poziv printk() unutar
+funkcija da biste potvrdili da su funkcije pozvane.
+	\item Inicijalizaciju \texttt{i2c\_driver} strukture i registraciju
+I\textsuperscript{2}C upravljačkog programa koristeći istu.
+koristeći istu. \texttt{compatible} postavke moraju odgovarati onima iz stabla
+uređaja.
+\end{enumerate}
+\newpage
+Sadržaj \texttt{nunchuk.c} datoteke bi mogao biti ovakav:
+\begin{lstlisting}
+#include <linux/init.h>
+#include <linux/module.h>
+#include <linux/i2c.h>
 
+static int
+probe(struct i2c_client *client,
+		const struct i2c_device_id *id)
+{
+	printk(KERN_ALERT "nunchuk probe() is called\n");
+	return 0;
+}
+
+static int
+remove(struct i2c_client *client)
+{
+	printk(KERN_ALERT "nunchuk remove() ic called\n");
+	return 0;
+}
+
+static const struct i2c_device_id id[] = {
+	{"nunchuk", 0},
+	{},
+};
+MODULE_DEVICE_TABLE(i2c, id);
+
+static struct of_device_id nunchuk_dt_match[] = {
+	{.compatible = "nintendo,nunchuk",},
+	{ },
+};
+
+static struct i2c_driver nunchuk_driver = {
+	.driver = {
+		.name = "nunchuk",
+		.owner = THIS_MODULE,
+		.of_match_table = nunchuk_dt_match,
+	},
+	.probe = probe,
+	.remove = remove,
+	.id_table = id,
+};
+
+module_i2c_driver(nunchuk_driver);
+MODULE_LICENSE("GPL");
+\end{lstlisting}
+
+Pokrenite prevođenje (prethodno moraju biti postavljene varijable okruženja
+\texttt{ARCH} i \texttt{CROSS\_COMPILE}!!!) koristeći naredbu:
+\begin{lstlisting}
+make
+\end{lstlisting}
+
+Stvoreni \texttt{nunchuk.ko} kernel modul kopirajte na \texttt{NFS} putanje
+od ploče \texttt{/home/rtrk/embedded\_linux/LV2/solutions/nfsroot/root}.
+Učitajte i uklonite kernel modul koristeći naredbe \texttt{insmod} i \texttt{rmmod}.
 
 \end{document}
