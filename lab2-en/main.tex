@@ -546,9 +546,8 @@ cat /root/test.txt
 \section{Boot automatically}
 To avoid typing the same commands every time the board is turned on, you can
  use the U-boot bootcmd variable:
-\begin{lstlisting}[language=bash]
-setenv bootcmd "tftp 0x01000000 zImage; tftp 0x2000000 bcm2710-rpi-3-b.dtb;
-bootz 0x01000000 - 0x2000000"
+\begin{lstlisting}[language=bash,escapechar=\&]
+setenv bootcmd "tftp 0x01000000 zImage;&\newline&tftp 0x2000000 bcm2710-rpi-3-b.dtb;bootz 0x01000000 - 0x2000000"
 
 saveenv
 \end{lstlisting}

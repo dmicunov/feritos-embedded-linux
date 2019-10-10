@@ -535,7 +535,7 @@ Sada možete pokrenuti jezgru:
 \begin{lstlisting}[language=bash]
 bootz 0x01000000 - 0x2000000
 \end{lstlisting}
-Ako je sve u redu, pojaviti će se login prompt (korisnik: root, bez zaporke).
+Ako je sve u redu, pojavit će se login prompt (korisnik: root, bez zaporke).
  Ako jezgra ne uspije podići mrežni datotečni sustav, pojavit će se poruke o
  greškama u terminalu. Pogledajte i NFS server poruke u \texttt{/var/log/syslog}
  na razvojnom računalu:
@@ -556,10 +556,8 @@ cat /root/proba.txt
 \section{Automatsko pokretanje sustava}
 Kako biste izbjegli upisivanje istih naredbi svaki put kada se uključi ploča,
  možete koristiti U-Boot \texttt{bootcmd} varijablu:
-\begin{lstlisting}[language=bash]
-setenv bootcmd "tftp 0x01000000 zImage; tftp 0x2000000 bcm2710-rpi-3-b.dtb;
-bootz 0x01000000 - 0x2000000"
-
+\begin{lstlisting}[language=bash,escapechar=\%]
+setenv bootcmd "tftp 0x01000000 zImage;tftp 0x2000000 bcm2710-rpi-3-b.dtb;%\newline%bootz 0x01000000 - 0x2000000"
 saveenv
 \end{lstlisting}
 Slobodno ovo možete promijeniti po potrebi. Npr. ako želite vratiti pokretanje
