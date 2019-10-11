@@ -206,12 +206,12 @@ Unutar \texttt{nunchuk.c} datoteke treba implementirati sljedeće:
 pronađen, odnosno uklonjen. Za sada samo iskoristite poziv printk() unutar
 funkcija da biste potvrdili da su funkcije pozvane.
 	\item Inicijalizirati \texttt{i2c\_device\_id} strukturu. Nakon toga,
-		pravilno popuniti \texttt{MODULE\_DEVICE\_TABLE} strukturu. Proučiti
+		pozovati \texttt{MODULE\_DEVICE\_TABLE} makro funkciju. Proučiti
 		što radi da \textit{helper} makro funkcija.
 	\item Inicijalizirati \texttt{i2c\_driver} strukturu i registrirati
 		I\textsuperscript{2}C upravljački program koristeći istu.
 		\texttt{compatible} postavke moraju odgovarati onima iz stabla
-		uređaja. Popuniti \texttt{module\_i2c\_driver} makro funkciju s
+		uređaja. Pozvati \texttt{module\_i2c\_driver} makro funkciju s
 		prethodno inicijaliziranom \texttt{i2c\_driver} strukturom.
 		Proučiti što radi ta \textit{helper} makro funkcija.
 \end{enumerate}
@@ -272,5 +272,15 @@ make
 \noindent Stvoreni \texttt{nunchuk.ko} kernel modul kopirajte na \texttt{NFS} putanje
 od ploče \texttt{/home/rtrk/embedded\_linux/LV2/solutions/nfsroot/root}.
 Učitajte i uklonite kernel modul koristeći naredbe \texttt{insmod} i \texttt{rmmod}.
+
+\section{Spremanje rada}
+Pozicionirajte se u direktorij \texttt{/home/rtrk/embedded\_linux/LV3/solutions}.
+Izvršite \texttt{Git} komande:
+\begin{lstlisting}[language=bash]
+git add nunchuk.c
+git add Makefile
+git commit -m "laboratorijska vjezba 3 gotova"
+git push origin master
+\end{lstlisting}
 
 \end{document}
