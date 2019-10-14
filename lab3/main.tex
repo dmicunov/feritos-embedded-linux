@@ -19,31 +19,6 @@
 \usepackage{enumitem}
 \usepackage{xcolor}
 
-\definecolor{mGreen}{rgb}{0,0.6,0}
-\definecolor{mGray}{rgb}{0.5,0.5,0.5}
-\definecolor{mPurple}{rgb}{0.58,0,0.82}
-\definecolor{backgroundColour}{rgb}{0.95,0.95,0.92}
-
-\lstdefinestyle{CStyle}{
-    backgroundcolor=\color{backgroundColour},
-    commentstyle=\color{mGreen},
-    keywordstyle=\color{magenta},
-    numberstyle=\tiny\color{mGray},
-    stringstyle=\color{mPurple},
-    basicstyle=\footnotesize,
-    breakatwhitespace=false,
-    breaklines=true,
-    captionpos=b,
-    keepspaces=true,
-    numbers=left,
-    numbersep=5pt,
-    showspaces=false,
-    showstringspaces=false,
-    showtabs=false,
-    tabsize=2,
-    language=C
-}
-
 \graphicspath{ {./images/} }
 
 \hypersetup{
@@ -126,7 +101,7 @@ omogućite da se i nova \texttt{dts} datoteka kompilira.
 \newline
 \newline
 Unutar nove datoteke, prvo trebamo omogućiti \texttt{i2c1} sabirnicu.
-Zatim, deklarirajte \texttt{nunchuk} uređaj kao čvor nasljednik \texttt{i2ci}.
+Zatim, deklarirajte \texttt{nunchuk} uređaj kao čvor nasljednik \texttt{i2c1}.
 Odaberite \texttt{nintendo,nunchuk} za \texttt{compatible} postavku.
 I\textsuperscript{2}C adresu \texttt{Nunchuk} uređaja možete provjeriti u
 \texttt{Nunchuk} dokumentu.
@@ -160,7 +135,7 @@ Nakon toga, pokrenite kompiliranje datoteka stabla uređaja koristeći naredbu:
 make dtbs
 \end{lstlisting}
 Kopirajte novu \texttt{dtb} datoteku u direktorij \texttt{tftp server}-a
-(\texttt{/var/lib/tftpboot} i napravite potrebne izmjene u \texttt{Uboot}
+(\texttt{/var/lib/tftpboot}) i napravite potrebne izmjene u \texttt{Uboot}
 konfiguraciji da bi \textit{Raspberry Pi} ploča prilikom pokretanja učitavala
 novu datoteku.
 \newline
@@ -190,23 +165,14 @@ Struktura \texttt{Makefile} datoteke je standardna. Bitan parametar je
 \texttt{KDIR} koji označava putanju do izvornog koda \texttt{Linux} jezgre.
 \newline
 \newline
-\texttt{Makefile} bi trebao izgledati ovako:
-\begin{lstlisting}
-ifneq ($(KERNELRELEASE),)
-obj-m := nunchuk.o
-else
-KDIR := /home/rtrk/buildroot/output/build/linux-custom
-all:
-	$(MAKE) -C $(KDIR) M=$$PWD
-endif
-\end{lstlisting}
+
 Unutar \texttt{nunchuk.c} datoteke treba implementirati sljedeće:
 \begin{enumerate}
 	\item probe() i remove() funkcije koje će biti pozvane kada je nunchuk
 pronađen, odnosno uklonjen. Za sada samo iskoristite poziv printk() unutar
 funkcija da biste potvrdili da su funkcije pozvane.
 	\item Inicijalizirati \texttt{i2c\_device\_id} strukturu. Nakon toga,
-		pozovati \texttt{MODULE\_DEVICE\_TABLE} makro funkciju. Proučiti
+		pozvati \texttt{MODULE\_DEVICE\_TABLE} makro funkciju. Proučiti
 		što radi da \textit{helper} makro funkcija.
 	\item Inicijalizirati \texttt{i2c\_driver} strukturu i registrirati
 		I\textsuperscript{2}C upravljački program koristeći istu.
@@ -215,53 +181,6 @@ funkcija da biste potvrdili da su funkcije pozvane.
 		prethodno inicijaliziranom \texttt{i2c\_driver} strukturom.
 		Proučiti što radi ta \textit{helper} makro funkcija.
 \end{enumerate}
-\newpage
-\noindent Moguće rješenje \texttt{nunchuk.c} datoteke je:
-\begin{lstlisting}[style=CStyle]
-#include <linux/init.h>
-#include <linux/module.h>
-#include <linux/i2c.h>
-
-static int
-probe(struct i2c_client *client,
-		const struct i2c_device_id *id)
-{
-	printk(KERN_INFO "nunchuk probe() is called\n");
-	return 0;
-}
-
-static int
-remove(struct i2c_client *client)
-{
-	printk(KERN_INFO "nunchuk remove() ic called\n");
-	return 0;
-}
-
-static const struct i2c_device_id id[] = {
-	{"nunchuk", 0},
-	{},
-};
-MODULE_DEVICE_TABLE(i2c, id);
-
-static struct of_device_id nunchuk_dt_match[] = {
-	{.compatible = "nintendo,nunchuk",},
-	{ },
-};
-
-static struct i2c_driver nunchuk_driver = {
-	.driver = {
-		.name = "nunchuk",
-		.owner = THIS_MODULE,
-		.of_match_table = nunchuk_dt_match,
-	},
-	.probe = probe,
-	.remove = remove,
-	.id_table = id,
-};
-
-module_i2c_driver(nunchuk_driver);
-MODULE_LICENSE("GPL");
-\end{lstlisting}
 
 Pokrenite prevođenje (prethodno moraju biti postavljene varijable okruženja
 \texttt{ARCH} i \texttt{CROSS\_COMPILE}!!!) koristeći naredbu:
@@ -274,7 +193,7 @@ od ploče \texttt{/home/rtrk/embedded\_linux/LV2/solutions/nfsroot/root}.
 Učitajte i uklonite kernel modul koristeći naredbe \texttt{insmod} i \texttt{rmmod}.
 
 \section{Spremanje rada}
-Pozicionirajte se u direktorij \texttt{/home/rtrk/embedded\_linux/LV3/solutions}.
+Pozicionirajte se u direktorij \texttt{/home/rtrk/embedded\_linux/LV3/solutions/nunchuk}.
 Izvršite \texttt{Git} komande:
 \begin{lstlisting}[language=bash]
 git add nunchuk.c
