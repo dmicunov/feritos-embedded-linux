@@ -1,0 +1,148 @@
+\documentclass[11pt]{article}
+\usepackage[croatian]{babel}  % Croatian typographical rules and hyphenation patterns
+\usepackage[utf8]{inputenc}  	% Encoding of Croatian characters
+\usepackage[T1]{fontenc}
+\usepackage{ae,aecompl}     	% Type 1 fonts, similar to Computer Modern
+
+\usepackage{microtype}				% Improves spacing
+
+\usepackage{booktabs}					% Nice looking tables
+\usepackage{enumerate}				% Additional options for listing of items in enumerate environment
+\usepackage{algorithm2e}			% Writing pseudo-code
+\usepackage{todonotes}				% Adding todo items
+\usepackage{dirtree}					% Simple display of directory tree
+\usepackage{hyperref}
+\usepackage{graphicx}
+\usepackage{subfig}
+\usepackage{caption}
+\usepackage{listings}
+\usepackage{enumitem}
+\usepackage{xcolor}
+
+\graphicspath{ {./images/} }
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,
+    urlcolor=cyan,
+}
+\urlstyle{same}
+\usepackage{graphics}
+\title{
+	\Large Sveučilište Josipa Jurja Strossmayera u Osijeku \\
+	Fakultet elektrotehnike, računarstva i informacijskih tehnologija \\
+	\vspace{4cm}
+	\Large Kolegij: Linux u ugradbenim sustavima \\
+	\vspace{4cm}
+	\Large \textbf{Laboratorijska vježba 4:\\
+	Nunchuk upravljački program}
+	}
+\date{}
+\begin{document}
+\maketitle
+\thispagestyle{empty}
+\newpage
+
+\section{Uvod}
+Cilj vježbe ja nastaviti izradu \texttt{Nunchuk} upravljačkog programa.
+Proučavajući \texttt{Nunchuk} dokumentaciju pronaći način kako pročitati
+stanja tipki \texttt{Nunchuk} uređaja. Stanja ispisati na standardnom izlazu.
+
+\section{Postavke}
+Za početak, postaviti varijable okruženja:
+\begin{lstlisting}
+export ARCH=arm
+export CROSS_COMPILE=arm-linux-gnueabihf-
+\end{lstlisting}
+Nakon toga, pozicionirajte se direktorij
+\texttt{/home/rtrk/embedded\_linux/LV4/solutions/nunchuk}. \texttt{Makefile}
+ostaje isti kao i u prethodnoj vježbi. Datoteku \texttt{nunchuk.c} nadograđujemo
+s prošle vježbe.
+
+\section{Stanja \texttt{Nunchuk} uređaja}
+Sljedeći korak u izradi upravljačkog programa \texttt{Nunchuk} uređaja je
+čitanje stanja registara. Prvo moramo poslati uređaju komande za inicijalizaciju.
+To je ujedno i zgodan način da bi se uvjerili da I\textsuperscript{2}C komunikacija
+ispravno radi.\\
+\newline
+U funkciji \texttt{probe()} (pokreće se svaki puta kada je uređaj prepoznat)
+treba implementirati sljedeće:
+\begin{enumerate}
+	\item Koristeći \texttt{i2c\_master\_send()} API uređaju poslati dva bajta:
+		\texttt{0x40} i \texttt{0x00}. Provjeravajte povratnu vrijednost
+		funkcije. U dokumentaciji na internetu pronađite primjere kako pravilno
+		rukovati greškama koristeći koristeći istu funkciju.
+	\item Nakon prošlog koraka sačekajte 1ms koristeći funkciju \texttt{udelay()}.
+		Provjerite koja zaglavlja je potrebno uključiti za ovu funkciju.
+	\item Na isti način pošaljite još i bajt \texttt{0x00}. Ovime je završena
+		inicijalizacija uređaja.
+\end{enumerate}
+Prevedite modul i uvjerite se da nema grešaka prilikom prevođenja.
+
+\section{Čitanje Nunchuk registra}
+Napravite funkciju \texttt{nunchuk\_read\_registers()}. U ovoj funkciji:
+\begin{enumerate}
+	\item Počnite s pauzom 10ms pozivom funkcije \texttt{mdelay()}. To je
+		trajanje neophodne pauze između dvije uzastopne I\textsuperscript{2}C
+		operacije.
+	\item Pošaljite bajt \texttt{0x00} na sabirnicu koristeći
+		\texttt{i2c\_master\_send} API.
+	\item Dodajte još jednu pauzu od 10ms.
+	\item Pročitajte 6 bajtova s uređaja. Provjerite povratne vrijednosti.
+\end{enumerate}
+
+\section{Čitanje stanja Nunchuk tipki}
+Vratite se na funkciju \texttt{probe()} gdje ćete funkciju
+\texttt{nunchuk\_read\_registers()} pozvati dva puta (stanja na
+I\textsuperscript{2}C sabirnici se mijenjaju tek nakon čitanja).
+Nakon drugog poziva, odredite stanja tipki \textit{Z} i \textit{C} koja se
+mogu pronaći u šestom bajtu kojeg ste pročitali.
+\newline
+\newline
+Kao što je objašnjeno u dokumentu
+\url{http://www.robotshop.com/media/files/PDF/inex-zx-nunchuck-datasheet.pdf}:
+\begin{enumerate}
+	\item Bit 0==0 označava da je tipka \textit{Z} pritisnuta.
+	\item Bit 0==1 označava da tipka \textit{Z} nije pritisnuta.
+	\item Bit 1==0 označava da je tipka \textit{C} pritisnuta.
+	\item Bit 1==1 označava da tipka \textit{C} nije pritisnuta.
+\end{enumerate}
+Koristeći se logičkim operatorima napišite kod koji postavlja \texttt{zpressed}
+cjelobrojnu varijablu kada je tipka \textit{Z} pritisnuta. Isto tako, napišite
+kod koji postavlja \texttt{cpressed} cjelobrojnu varijablu kada je tipka
+\textit{C} pritisnuta.
+\newline
+\newline
+Na kraju funkcije \texttt{probe()} provjerite stanja novih varijabli i ispišite
+koja je tipka pritisnuta na standardni izlaz.
+
+\section{Testiranje}
+Prevedite modul i učitajte ga. Uklonite module. Nikakvi ispisi se ne bi trebali
+pojaviti. Sada pritisnite tipku \textit{Z} ili \textit{C}. Ponovo učitajte i
+uklonite modul:
+\begin{lstlisting}[language=bash]
+insmod /root/nunchuk/nunchuk.ko; rmmod nunchuk
+\end{lstlisting}
+Sada bi trebali vidjeti ispise s obzirom na pritisnute tipke. Ponovite istu
+proceduru nekoliko puta s različitim kombinacijama tipki.
+\newline
+\newline
+Na ovoj smo se laboratorijskoj vježbi učili kako učitati stanja uređaja na
+I\textsuperscript{2}C sabirnici. Naravno, promjene smo mogli uočiti samo
+učitavajući i uklanjajući modul, što u stvarnom životu baš i nije neko dobro
+rješenje. Na sljedećoj ćemo laboratorijskoj vježbi raditi na mehanizmu kako
+provjeravati stanja periodički.
+
+\section{Spremanje rada}
+Pozicionirajte se u direktorij \texttt{/home/rtrk/embedded\_linux/LV4/solutions/nunchuk}.
+Izvršite \texttt{Git} komande:
+\begin{lstlisting}[language=bash]
+git add nunchuk.c
+git add Makefile
+git commit -m "laboratorijska vjezba 4 gotova"
+git push origin master
+\end{lstlisting}
+
+
+\end{document}
