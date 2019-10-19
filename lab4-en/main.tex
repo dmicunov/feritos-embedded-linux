@@ -1,0 +1,143 @@
+\documentclass[11pt]{article}
+\usepackage[english]{babel}  % Croatian typographical rules and hyphenation patterns
+\usepackage{ae,aecompl}     	% Type 1 fonts, similar to Computer Modern
+
+\usepackage{microtype}				% Improves spacing
+
+\usepackage{booktabs}					% Nice looking tables
+\usepackage{enumerate}				% Additional options for listing of items in enumerate environment
+\usepackage{algorithm2e}			% Writing pseudo-code
+\usepackage{todonotes}				% Adding todo items
+\usepackage{dirtree}					% Simple display of directory tree
+\usepackage{hyperref}
+
+\usepackage{graphicx}
+\usepackage{subfig}
+\usepackage{caption}
+\usepackage{listings}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,
+    urlcolor=cyan,
+}
+\urlstyle{same}
+\usepackage{graphics}
+
+\graphicspath{ {./images/} }
+
+\title{
+	\Large Josip Juraj Strossmayer University of Osijek \\
+	Faculty of Electrical Engineering, Computer Science and Information
+	 Technologies\\
+	\vspace{4cm}
+	\Large Course: Linux in Embedded Systems \\
+	\vspace{4cm}
+	\Large \textbf{Laboratory exercise 3: Nunchuk device driver}
+	}
+\date{}
+\begin{document}
+\maketitle
+\thispagestyle{empty}
+\newpage
+
+\section{Introduction}
+The goal of the exercise is to continue making the Nunchuk driver.
+Check the Nunchuk documentation to find a way to read the status of the Nunchuk
+device keys. Print states using the standard output.
+
+\section{Setup}
+Set environment variables:
+\begin{lstlisting}
+export ARCH=arm
+export CROSS_COMPILE=arm-linux-gnueabihf-
+\end{lstlisting}
+After that, position yourself in the
+\texttt{/home/rtrk/embedded\_linux/LV4/solutions/nunchuk} directory. The
+\texttt{Makefile} remains the same as in the previous exercise. We are upgrading
+the \texttt{nunchuk.c} file from the previous exercise.
+
+\section{States of the \texttt{Nunchuk} device}
+The next step in creating a Nunchuk device driver is to read the status of the
+registers. We must first send to the device an initialization command. It is
+also a convenient way to make sure that I\textsuperscript{2}C communication is
+working properly.
+\newline
+\newline
+In the \texttt{probe()} (starts each time the device is recognized) the
+following should be implemented:
+\begin{enumerate}
+	\item Using the \texttt{i2c\_master\_send()} API, send two bytes to the
+		device: 0x40 and 0x00. Check the return value of the function. See
+		online documentation for examples of how to properly handle errors using
+		the same function.
+	\item After the last step, wait 1ms using the \texttt{udelay()} function.
+		Check which headers to include for this feature.
+	\item Also send byte 0x00 in the same way. This completes the initialization
+		of the device.
+Compile the module and make sure there are no compilation errors.
+\end{enumerate}
+
+\section{Reading the Nunchuk register}
+Create the \texttt{nunchuk\_read\_registers()} function. In this function:
+\begin{enumerate}
+	\item Start with a 10ms pause by calling \texttt{mdelay()}. This is the
+		duration of the necessary pause between two consecutive
+		I\textsuperscript{2}C operations.
+	\item Send the 0x00 byte to the bus using the \texttt{i2c\_master\_send}
+		API.
+	\item Add another 10ms pause.
+	\item Read 6 bytes from the device. Check the return values.
+\end{enumerate}
+
+\section{Reading the status of Nunchuk keys}
+Return to the \texttt{probe()} where you will call the
+\texttt{nunchuk\_read\_registers()} function twice (states on the
+I\textsuperscript{2}C bus change only after reading).
+After the second call, determine the states of the \textit{Z} and
+\textit{C} keys that can be found in the sixth byte that you read.
+\newline
+\newline
+As explained in the document
+\url{http://www.robotshop.com/media/files/PDF/inex-zx-nunchuck-datasheet.pdf}:
+\begin{enumerate}
+	\item Bit 0 == 0 indicates that the \textit{Z} key is pressed.
+	\item Bit 0 == 1 indicates that the \textit{Z} key is not pressed.
+	\item Bit 1 == 0 indicates that the \textit{C} key is pressed.
+	\item Bit 1 == 1 indicates that the \textit{C} key is not pressed.
+\end{enumerate}
+Using logical operators, write code that sets the \texttt{zpressed} integer
+variable when the \textit{Z} key is pressed. Also, write the code that sets the
+\texttt{cpressed} integer variable when the \textit{C} key is pressed.
+\newline
+\newline
+At the end of the \texttt{probe()} function, check the states of the new
+variables and print which key is pressed to standard output.
+
+\section{Testing}
+Translate the module and load it. Remove the module. No printouts should appear.
+Now press the Z or C. Insert and remove module:
+\begin{lstlisting}[language=bash]
+insmod /root/nunchuk/nunchuk.ko; rmmod nunchuk
+\end{lstlisting}
+You should now see the prints with the keys pressed. Repeat the same procedure
+several times with different key combinations.
+\newline
+\newline
+In this lab we learned how to load device states on an I\textsuperscript{2}C
+bus. Of course, we could only see the changes by loading and removing the
+module, which is not really a good solution in real life. In the next lab, we
+will work on a mechanism for checking states periodically.
+
+\section{Saving work}
+Position yourself in the
+\texttt{/home/rtrk/embedded\_linux/LV4/solutions/nunchuk} directory.
+Execute \texttt{Git} commands:
+\begin{lstlisting}[language=bash]
+git add nunchuk.c
+git add Makefile
+git commit -m "laboratory exercise 4 done"
+git push origin master
+\end{lstlisting}
+\end{document}
