@@ -41,7 +41,7 @@ editora. Prevođenje i pokretanje programa. Korištenje mrežnih protokola.
 
 \section{Pokretanje operacijskog sustava. Pokretanje terminala}
 Nakon uključivanja računala u izborniku \textit{boot} sustava izaberite
-\textit{Ubuntu}. Korisničko ime je \textit{rtrk}, a lozinka \textit{rtrk}.
+\textit{Ubuntu}. Korisničko ime je \textit{Profesor}, a lozinka \textbf{fer1t.Pr0f}.
 Pričekajte da se pokrene operacijski sustav. Na ekranu će se pojaviti
 grafičko sučelje. Upoznajte se s grafičkim sučeljem. Primjerice, pokušajte
 pronaći status Ethernet veze vašeg računala.
@@ -90,7 +90,7 @@ Sadržaj home direktorija izlistajte naredbom \textit{ls}. Pomoću naredbe
  . ispred imena?
 \newline
 \newline
-Pozicionirajte se u \textit{/home/rtrk/embedded\_linux/LV1/resources}
+Pozicionirajte se u \textit{/home/profesor/embedded\_linux/LV1/resources}
  direktorij. Izlistajte samo datoteke/direktorije koji počinju s malim slovom.
  Izlistajte sve datoteke koje završavaju s \textit{.txt}. Izlistajte sve
  datoteke koje ne završavaju s \textit{.txt}.
@@ -106,33 +106,31 @@ Pomoću naredbe \textit{cd} pozicionirajte se u korijenski direktorij. Na koje
  detaljan sadržaj tog direktorija. Prikažite samo uređaje/datoteke koje počinju
  s malim slovom "d". Možete li zaključiti što predstavljaju izlistane datoteke?
  \section{Manipulacija datotekama}
- Pozicionirajte se u \textit{/home/rtrk/embedded\_linux/LV1/resources}
+ Pozicionirajte se u \textit{/home/profesor/embedded\_linux/LV1/resources}
  direktorij. Kopirajte sve datoteke koje u svom imenu sadrže znak 9 u
- direktorij \\ \textit{/home/rtrk/embedded\_linux/LV1/resources/test9}.
- Izbrišite sve datoteke u \textit{/home/rtrk/embedded\_linux/LV1/resources}
+ direktorij \\ \textit{/home/profesor/embedded\_linux/LV1/resources/test9}.
+ Izbrišite sve datoteke u \textit{/home/profesor/embedded\_linux/LV1/resources}
  koje u svom imenu sadrže znak "9". Provjerite rezultate izlistavanjem sadržaja
  direktorija.
 \newline
 \newline
-Napravite novi direktorij u \textit{/home/rtrk/embedded\_linux/LV1/resources}
+Napravite novi direktorij u \textit{/home/profesor/embedded\_linux/LV1/resources}
  naziva \textit{Test}. Kopirajte sve datoteke koje imaju u imenu niz
  \textit{test\_datoteka} u direktorij \textit{Test}. Promijenite naziv
  direktorija \textit{Test} u \textit{test}. Obrišite direktorij \textit{test}.
  Provjerite rezultate izlistavanjem sadržaja direktorija.
  \newline
  \newline
-Kopirajte direktorij \textit{/home/rtrk/embedded\_linux/LV1} u \\
- \textit{/home/rtrk/embedded\_linux/LV1\_temp}. Provjerite rezultate
+Kopirajte direktorij \textit{/home/profesor/embedded\_linux/LV1} u \\
+ \textit{/home/profesor/embedded\_linux/LV1\_temp}. Provjerite rezultate
  izlistavanjem sadržaja direktorija. Obrišite direktorij \textit{LV1\_temp}.
 \newline
 \newline
 Izbrišite sve datoteke koje imaju u imenu niz \textit{test\_datoteka} u
- direktoriju \textit{/home/rtrk/embedded\_linux/LV1/resources}.
+ direktoriju \textit{/home/profesor/embedded\_linux/LV1/resources}.
 \newline
 \newline
-Raspakirajte datoteku
- \textit{/home/rtrk/embedded\_linux/LV1/resources/mbox.txt.bz2}. Spremite
- stanje repozitorija u lokalnu bazu kao i na udaljeno računalo pomoću
+Spremite stanje repozitorija u lokalnu bazu kao i na udaljeno računalo pomoću
  \textit{git} naredbi \textit{commit} i \textit{push}. Prilikom spremanja
  stanja pomoću \textit{commit} naredbe napišite odgovarajuću poruku.
 
@@ -144,7 +142,8 @@ Prikažite sadržaj datoteke \textit{mbox.txt} pomoću naredbi \textit{cat},
 \newline
 \newline
 Prikažite sve email adrese koje se pojavljuju u datoteci
- \textit{mbox-short.txt}. Spremite sve pronađene email adrese u datoteku
+\textit{mbox-short.txt}. Koristite naredbu \textttt{grep}.
+Spremite sve pronađene email adrese u datoteku
  \textit{emails.txt}. Promijenite prava datoteke \textit{emails.txt} tako da je
  moguće samo čitanje datoteke od svih korisnika.
 \newline
@@ -152,7 +151,7 @@ Prikažite sve email adrese koje se pojavljuju u datoteci
 Pronađite email adrese u datoteci \textit{mbox.txt} i spremite ih u
  \textit{emails1.txt}. Usporedite datoteke \textit{emails.txt} i
  \textit{emails1.txt}. Potražite brojeve u svakoj datoteci u direktoriju \\
- \textit{/home/rtrk/embedded\_linux/LV1/resources/test9} pri čemu rezultat
+ \textit{/home/profesor/embedded\_linux/LV1/resources/test9} pri čemu rezultat
  treba prikazati na zaslonu računala. Rezultat trebaju biti brojevi 9, 19, 29,
  39… (svaki broj je u zasebnom redu). Zapišite u datoteku \textit{brojevi.txt}
  rezultate pretraživanja (bez naziva izvorne datoteke). Prikažite sadržaj
@@ -206,9 +205,9 @@ Naredna vježba radi se u paru. Potrebno je ostvariti \textit{SSH} vezu između
  korisnika. S drugog računala spojiti se \textit{SSH} vezom na računalo na
  kojem se nalazi \textit{SSH} server pomoću podataka za kreiranog korisnika.
  Pokretanjem programa \textit{encrpyt} koji se nalazi u
- \textit{/home/rtrk/embedded\_linux/LV1/resources/} ostaviti šifriranu poruku
- korisniku \textit{rtrk} u datoteci \textit{poruka.txt}. Usmeno razmijeniti
- ključ za šifriranje. Korisnik \textit{rtrk} na serveru treba dešifrirati
+ \textit{/home/profesor/embedded\_linux/LV1/resources/} ostaviti šifriranu poruku
+ korisniku \textit{Profesor} u datoteci \textit{poruka.txt}. Usmeno razmijeniti
+ ključ za šifriranje. Korisnik \textit{Profesor} na serveru treba dešifrirati
  poruku.
 
 \section{Spremanje rada}
@@ -221,7 +220,7 @@ Vratite se u glavnu granu git sustava pomoću naredbe
 \textit{history > pero\_peric.txt})
 \newline
 \newline
-Datoteku prebacite u \textit{/home/rtrk/embedded\_linux/LV1/solutions/}.
+Datoteku prebacite u \textit{/home/profesor/embedded\_linux/LV1/solutions/}.
  Spremite promjene u lokani repozitorij pomoću naredbe \textit{git commit} kao
  i na vaš udaljeni račun pomoću \textit{git push –u origin master}.Napravite
  „merge request“ na \textit{Gitlab} stranici kako bi se vaša datoteka

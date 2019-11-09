@@ -1,0 +1,253 @@
+\documentclass[11pt]{article}
+\usepackage[croatian]{babel}  % Croatian typographical rules and hyphenation patterns
+\usepackage[utf8]{inputenc}  	% Encoding of Croatian characters
+\usepackage[T1]{fontenc}
+\usepackage{ae,aecompl}     	% Type 1 fonts, similar to Computer Modern
+
+\usepackage{microtype}				% Improves spacing
+
+\usepackage{booktabs}					% Nice looking tables
+\usepackage{enumerate}				% Additional options for listing of items in enumerate environment
+\usepackage{algorithm2e}			% Writing pseudo-code
+\usepackage{todonotes}				% Adding todo items
+\usepackage{dirtree}					% Simple display of directory tree
+\usepackage{hyperref}
+\usepackage{graphicx}
+\usepackage{subfig}
+\usepackage{caption}
+\usepackage{listings}
+\usepackage{enumitem}
+\usepackage{xcolor}
+
+\graphicspath{ {./images/} }
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,
+    urlcolor=cyan,
+}
+\urlstyle{same}
+\usepackage{graphics}
+\title{
+	\Large Sveučilište Josipa Jurja Strossmayera u Osijeku \\
+	Fakultet elektrotehnike, računarstva i informacijskih tehnologija \\
+	\vspace{4cm}
+	\Large Kolegij: Linux u ugradbenim sustavima \\
+	\vspace{4cm}
+	\Large \textbf{Laboratorijska vježba 5:\\
+	Nunchuk upravljački program i\\
+	\textit{polling} mehanizam}
+	}
+\date{}
+\begin{document}
+\maketitle
+\thispagestyle{empty}
+\newpage
+
+\section{Uvod}
+Cilj ove vježbe je omogućiti \textit{user space} dijelu \textit{Linux}
+operativnog sustava pristup događajima vanjskog uređaja (\textit{kernel space})
+korištenjem \textit{polling} mehanizma \textit{Linux} jezgre. Dovršiti
+podršku za funkcionalnost cijelog \textit{Nunchuk} uređaja.
+
+\section{Postavke}
+Za početak, postaviti varijable okruženja:
+\begin{lstlisting}
+export ARCH=arm
+export CROSS_COMPILE=arm-linux-gnueabihf-
+\end{lstlisting}
+Nakon toga, pozicionirajte se direktorij
+\texttt{/home/rtrk/embedded\_linux/LV5/solutions/nunchuk}. \texttt{Makefile}
+ostaje isti kao i u prethodnoj vježbi. Datoteku \texttt{nunchuk.c} nadograđujemo
+s prošle vježbe.
+
+\section{Dodavanje podrške za \textit{polling} mehanizam u \textit{Linux} jezgru}
+\textit{Nunchuk} nema prekide (engl. \textit{interrupt}) s kojima bi obavijestio
+\textit{Linux} jezgru da je njegovo stanje promijenjeno. Stoga je jedan način
+otkrivanja promjena korištenjem \textit{polling} mehanizma.
+\newline
+\newline
+Potrebno je ponovno prevesti \textit{Linux} jezgru. Pozicionirajte se u
+direktorij gdje se nalazi izvorni kod \textit{Linux} jezgre koji bi trebao biti
+na putanji \texttt{/home/rtrk/buildroot/output/build/linux-custom}.
+Otvorite \texttt{menuconfig} izbornik korištenjem naredbe:
+\begin{lstlisting}
+make menuconfig
+\end{lstlisting}
+Ako se prilikom pokretanja naredbe javila greška, vjerojatno nije instalirana
+biblioteka \texttt{libncurses} na razvojnom računalu.\\
+Instalirajte biblioteku korištenjem naredbe:
+\begin{lstlisting}
+sudo apt-get install libncurses-dev
+\end{lstlisting}
+Kada ste ušli u \texttt{menuconfig} izbornik, potrebno je potražiti
+konfiguracijske stavke \texttt{INPUT\_POLLDEV} i \texttt{INPUT\_EVDEV} i
+uključiti ih. S tipkom \textit{slash} (\texttt{/}) pretražujete postavke.
+Pritisnite tipku '/' te pretražite postavku "\texttt{INPUT\_POLLDEV}".
+Numeričkim izborom (npr. '1') izaberete postavku. Postavite ju na "\texttt{yes}"
+korištenjem tipke razmaka na tipkovnici. Isto napravite i za postavku
+\texttt{INPUT\_EVDEV}. Spremite novu konfiguraciju i izađite iz izbornika.
+Ponovno prevedite \texttt{Linux} jezgru te kopirajte novu \texttt{zImage}
+datoteku u direktorij \texttt{/var/lib/tftpboot}. Ponovno pokrenite ploču.
+
+\section{Nadogradnja \textit{Nunchuk} upravljačkog programa}
+Prvo treba dodati ulazni uređaj u sustav. Napravite sljedeće izmjene:
+\begin{enumerate}
+	\item Deklarirajte pokazivač na \texttt{input\_polled\_dev} strukturu u
+		funkciji \texttt{probe()}. Možete ga nazvati \texttt{polled\_input}.
+	\item Alocirajte novu strukturu u istoj funkciji koristeći funkciju
+		\texttt{input\_allocate\_polled\_device()}.
+	\item Definirajte pokazivač na \texttt{input\_dev} strukturu. Možete ga
+		nazvati input. Alokacija nije potrebna jer je on već dio
+		\texttt{input\_polled\_dev} strukture i istovremeno je alociran.
+		Koristit ćemo ga samo kao prečicu da bismo kod održali što
+		jednostavnijim.
+	\item U funkciji \texttt{probe()} dodajte ulazni uređaj u sistem pozivom
+		\texttt{input\_register\_polled\_device()}.
+\end{enumerate}
+Uvjerite se da se modul uspješno prevodi. Dodajte po potrebi zaglavlja koja
+nedostaju.
+
+\section{Rukovanje greškama u \texttt{probe()} funkciji}
+U kodu kojeg ste napisali, provjerite da li na odgovarajući način upravljate
+greškama:
+\begin{enumerate}
+	\item Uvijek na odgovarajući način provjerite povratne vrijednosti
+		funkcija i evidentirajte uzroke grešaka.
+	\item Ako je poziv funkcije \texttt{input\_register\_polled\_device()}
+		neuspješan, morate osloboditi \texttt{input\_polled\_dev} strukturu
+		prije nego što vratite kod greške, odnosno prije nego što se završi
+		izvršavanje funkcije. Ako to ne uradite prouzročit će te curenje
+		memorije (engl. \textit{memory leak}) u kernelu. Općenito govoreći,
+		neuspješno otpuštanje onoga što je prethodno bilo alocirano ili
+		registrirano može dovesti do problema, odnosno može spriječiti ponovno
+		učitavanje modula.
+\end{enumerate}
+
+Za korektno i lijepo upravljanje greškama bez suvišnog i ružnog kopiranja koda
+preporuča se korištenje naredbe \texttt{goto}.
+
+\section{Implementacija funkcije \texttt{remove()}}
+U ovoj funkciji je potrebno otpustiti sve resurse koje je zauzela ili
+registrirala funkcija \texttt{probe()}.
+\newline
+\newline
+Prije nego što krenemo se implementacijom funkcije \texttt{remove()},
+dodajte sljedeću definiciju strukture na počektu datoteke:
+\begin{lstlisting}
+struct nunchuk_dev {
+	struct input_polled_dev *polled_input;
+	struct i2c_client *i2c_client;
+};
+\end{lstlisting}
+Zatim, u funkciji \texttt{probe()} deklarirajte instancu ove strukture:
+\begin{lstlisting}
+struct nunchuk_dev *nunchuk;
+\end{lstlisting}
+Zatim alocirajte strukturu za novi uređaj:
+\begin{lstlisting}
+nunchuk = devm_kzalloc(&client->dev, sizeof(struct nunchuk_dev),
+	GFP_KERNEL);
+if (!nunchuk) {
+	dev_err(&client->dev, "Failed to allocate memory\n");
+	return -ENOMEM;
+}
+\end{lstlisting}
+Primijetite da je \texttt{devm\_kzalloc} funkcija za alociranje memorije u
+kernelu.
+Nadalje, u funkciji \texttt{probe()} dodajte:
+\begin{lstlisting}
+nunchuk->i2c_client = client;
+nunchuk->polled_input = polled_input;
+polled_input->private = nunchuk;
+i2c_set_clientdata(client, nunchuk);
+input = polled_input->input;
+input->dev.parent = &client->dev;
+\end{lstlisting}
+Sada imamo sve što je potrebno za implementiranje funkcije \texttt{remove()}:
+\begin{lstlisting}
+struct nunchuk_dev *nunchuk;
+dev = i2c_get_clientdata(client);
+input_unregister_polled_device(nunchuk->polled_input);
+input_free_polled_device(nunchuk->polled_input);
+devm_kfree(&nunchuk->dev, dev);
+\end{lstlisting}
+Pronađite analogije s pozivima unutar funkcije \texttt{probe()}.
+\newline
+\newline
+Prevedite ponovno modul, učitajte ga te ga uklonite nekoliko puta kako bi ste
+se uvjerili da je sve uspješno prijavljeno, odnosno odjavljeno.
+
+\section{Dodavanje ispravnih informacija o registraciji ulaznog uređaja}
+Prije registracije ulazne strukture trebamo dodati još informacija.
+To je razlog zbog kojeg u ovom trenutku dobivate upozorenja
+prilikom učitavanja modula, odnosno prijave novog uređaja:
+\begin{lstlisting}[language=bash]
+input: Unspecified device as /devices/virtual/input/input0
+\end{lstlisting}
+Dodajte sljedeće linije koda:
+\begin{lstlisting}[language=bash]
+input->name = "Wii Nunchuk";
+input->id.bustype = BUS_I2C;
+set_bit(EV_ABS, input->evbit);
+set_bit(ABS_X, input->absbit);
+set_bit(ABS_Y, input->absbit);
+set_bit(ABS_RX, input->absbit);
+set_bit(ABS_RY, input->absbit);
+set_bit(ABS_RZ, input->absbit);
+set_bit(EV_KEY, input->evbit);
+set_bit(BTN_C, input->keybit);
+set_bit(BTN_Z, input->keybit);
+set_bit(INPUT_PROP_ACCELEROMETER, input->propbit);
+\end{lstlisting}
+Također, dodajte pozive funkcija koje otklanjaju šum na akcelerometru te
+komandnoj ručici:
+\begin{lstlisting}[language=bash]
+input_set_abs_params(input, ABS_X, 30, 220, 4, 8);
+if (!input->absinfo) {
+	dev_err(&client->dev, "input->absinfo allocation failed\n");
+	goto exit_nunchuk_dev;
+}
+input_set_abs_params(input, ABS_Y, 40, 200, 4, 8);
+input_set_abs_params(input, ABS_RX, 0, 0x3ff, 4, 8);
+input_set_abs_params(input, ABS_RY, 0, 0x3ff, 4, 8);
+input_set_abs_params(input, ABS_RZ, 0, 0x3ff, 4, 8);
+\end{lstlisting}
+Deklarirajte novu \texttt{polling} funkciju i postavite interval od 50ms:
+\begin{lstlisting}[language=bash]
+polled_input->poll = nunchuk_poll;
+polled_input->poll_interval = 50;
+\end{lstlisting}
+Uloga \texttt{nunchuk\_poll} funkcije je izračunati sva stanja \textit{Nunchuk}
+uređaja te predati stanja u obliku događaja (engl. \textit{event}):
+\begin{lstlisting}
+input_event(polled_input->input, EV_KEY, BTN_Z, z_pressed);
+input_event(polled_input->input, EV_KEY, BTN_C, c_pressed);
+input_report_abs(polled_input->input, ABS_RX, accelerometer[0]);
+input_report_abs(polled_input->input, ABS_RY, accelerometer[1]);
+input_report_abs(polled_input->input, ABS_RZ, accelerometer[2]);
+input_report_abs(polled_input->input, ABS_X, joystick[0]);
+input_report_abs(polled_input->input, ABS_Y, joystick[1]);
+input_sync(polled_input->input);
+\end{lstlisting}
+\section{Testiranje modula}
+Testiranje ulaznog uređaja je jednostavno kada se koristi \textit{evtest}
+aplikacija koja je uključena i u \textit{root filesystem}.
+Pokrenite \textit{evtest} aplikaciju na način:
+\begin{lstlisting}
+evtest /dev/input/event0
+\end{lstlisting}
+Pritisnite različite kombinacije tipaka i uočite kako su određeni događaji
+prijavljeni kroz \textit{evtest} aplikaciju.
+
+\section{Spremanje rada}
+Pozicionirajte se u direktorij \texttt{/home/profesor/embedded\_linux/LV4/solutions/nunchuk}.
+Izvršite \texttt{Git} komande:
+\begin{lstlisting}[language=bash]
+git add nunchuk.c
+git add Makefile
+git commit -m "laboratorijska vjezba 5 gotova"
+git push origin master
+\end{lstlisting}
+\end{document}
