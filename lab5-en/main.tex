@@ -1,0 +1,91 @@
+\documentclass[11pt]{article}
+\usepackage[english]{babel}  % Croatian typographical rules and hyphenation patterns
+\usepackage{ae,aecompl}     	% Type 1 fonts, similar to Computer Modern
+
+\usepackage{microtype}				% Improves spacing
+
+\usepackage{booktabs}					% Nice looking tables
+\usepackage{enumerate}				% Additional options for listing of items in enumerate environment
+\usepackage{algorithm2e}			% Writing pseudo-code
+\usepackage{todonotes}				% Adding todo items
+\usepackage{dirtree}					% Simple display of directory tree
+\usepackage{hyperref}
+
+\usepackage{graphicx}
+\usepackage{subfig}
+\usepackage{caption}
+\usepackage{listings}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,
+    urlcolor=cyan,
+}
+\urlstyle{same}
+\usepackage{graphics}
+
+\graphicspath{ {./images/} }
+
+\title{
+	\Large Josip Juraj Strossmayer University of Osijek \\
+	Faculty of Electrical Engineering, Computer Science and Information
+	 Technologies\\
+	\vspace{4cm}
+	\Large Course: Linux in Embedded Systems \\
+	\vspace{4cm}
+	\Large \textbf{Laboratory exercise 5: Nunchuk device driver\\
+					and polling mechanism}
+	}
+\date{}
+\begin{document}
+\maketitle
+\thispagestyle{empty}
+\newpage
+
+\section{Introduction}
+The goal of this exercise is to allow the user space part of the Linux
+operating system to access the events of an external device using the Linux
+kernel polling mechanism. Complete support for the functionality of the entire
+Nunchuk device.
+
+\section{Setup}
+First, set environment variables:
+\begin{lstlisting}
+export ARCH=arm
+export CROSS_COMPILE=arm-linux-gnueabihf-
+\end{lstlisting}
+After that, position yourself in the \texttt{/home/profesor/embedded\_linux/LV5/solutions/nunchuk}
+directory.
+The \texttt{Makefile} remains the same as in the previous exercise. We are
+upgrading the \texttt{nunchuk.c} file from the previous exercise.
+
+\section{Enabling polling in Linux kernel}
+\texttt{Nunchuk} does not have any interrupts to notify the Linux kernel that
+ it's status has changed. Therefore, one way to detect change is by using a
+ polling mechanism.
+\newline
+\newline
+Linux kernel needs to be compiled again. Position yourself directly
+where the Linux kernel source code should be in the path
+ \texttt{/home/profesor/buildroot/output/build/linux-custom}. Open the
+ \texttt{menuconfig} menu using the command:
+\begin{lstlisting}
+make menuconfig
+\end{lstlisting}
+If an error occurred while running the command, the \texttt{libncurses} library
+ on the development computer was probably not installed. Install the library
+ using the command:
+\begin{lstlisting}
+sudo apt-get install libncurses-dev
+\end{lstlisting}
+Once you have entered the \texttt{menuconfig} menu, you need to search for the
+\texttt{INPUT\_POLLDEV} and \texttt{INPUT\_EVDEV} configuration items and enable
+them. Use the slash (/) key to search the settings. Press the '/' key and search
+for the '\texttt{INPUT\_POLLDEV}' setting. Numerically select (e.g. '1') to
+ select a setting. Set it to “yes” by using the space bar on the keyboard. Do
+ the same for the \texttt{INPUT\_EVDEV} setting. Save the new configuration and
+ exit the menu. Recompile the Linux kernel and copy the new zImage file to the
+ \texttt{/var/lib/tftpboot} directory. Restart the board.
+
+\end{document}
