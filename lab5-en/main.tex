@@ -85,7 +85,163 @@ them. Use the slash (/) key to search the settings. Press the '/' key and search
 for the '\texttt{INPUT\_POLLDEV}' setting. Numerically select (e.g. '1') to
  select a setting. Set it to “yes” by using the space bar on the keyboard. Do
  the same for the \texttt{INPUT\_EVDEV} setting. Save the new configuration and
- exit the menu. Recompile the Linux kernel and copy the new zImage file to the
- \texttt{/var/lib/tftpboot} directory. Restart the board.
+ exit the menu. Recompile the Linux kernel and copy the new \texttt{zImage}
+ file to the \texttt{/var/lib/tftpboot} directory. Restart the board.
 
+\section{Upgrading \texttt{Nunchuk} device driver}
+The input device must first be added to the system. Make the following changes:
+\begin{enumerate}
+	\item Declare a pointer to the \texttt{input\_polled\_dev} structure in
+		function \texttt{probe()}. You can call it \texttt{polled\_input}.
+	\item Allocate a new structure in the same function using the\\
+		\texttt{input\_allocate\_polled\_device()} function.
+	\item Define a pointer to the \texttt{input\_dev} structure. You can call it
+		\texttt{input}. Allocation is not required because it is already part of
+		\texttt{input\_polled\_dev} structure and is simultaneously allocated.
+		We will only use it as a shortcut to keep the code as simple as
+		possible.
+	\item In function \texttt{probe()}, add the input device to the system by
+		calling \texttt{input\_register\_polled\_device()}.
+\end{enumerate}
+Make sure the module compiles successfully. Add missing headers as needed.
+
+\section{Error handling in \texttt{probe()} function}
+In the code you wrote, make sure you properly handle errors:
+\begin{enumerate}
+	\item Always check the return values of the functions and log the causes of
+		errors.
+	\item If the call to the \texttt{input\_register\_polled\_device()} function
+		fails, you must release the \texttt{input\_polled\_dev} structure before
+		returning error code, that is, before the function is completed. If
+		not doing this will cause these memory leaks in the kernel. Generally
+		speaking, failing to let go of what is previously allocated or
+		registered can lead to problems, that is, it can prevent the module from
+		reloading.
+\end{enumerate}
+It is recommended to use the \texttt{goto} command for correct and nice error
+ management without unnecessary and ugly copying of the code.
+
+\section{Implementing function \texttt{remove()}}
+All resources occupied or registered by the \texttt{probe()} function must be
+ released in this function.
+\newline
+Before we get started with the \texttt{remove()} function, let's add the
+ following structure definition at the beginning of the file:
+\begin{lstlisting}
+struct nunchuk_dev {
+	struct input_polled_dev *polled_input;
+	struct i2c_client *i2c_client;
+};
+\end{lstlisting}
+Then allocate the structure for the new device:
+\begin{lstlisting}
+nunchuk = devm_kzalloc(&client->dev, sizeof(struct nunchuk_dev),
+	GFP_KERNEL);
+if (!nunchuk) {
+	dev_err(&client->dev, "Failed to allocate memory\n");
+	return -ENOMEM;
+}
+\end{lstlisting}
+Notice that \texttt{devm\_kzalloc} is a function to allocate memory in the
+ kernel.
+Furthermore, in the \texttt{probe()} function, add:
+\begin{lstlisting}
+nunchuk->i2c_client = client;
+nunchuk->polled_input = polled_input;
+polled_input->private = nunchuk;
+i2c_set_clientdata(client, nunchuk);
+input = polled_input->input;
+input->dev.parent = &client->dev;
+\end{lstlisting}
+Now we have everything we need to implement the \texttt{remove()} function:
+\begin{lstlisting}
+static int
+nunchuk_remove(struct i2c_client *client)
+{
+	struct nunchuk_dev *dev;
+	dev = i2c_get_clientdata(client);
+	input_unregister_polled_device(dev->polled_input);
+	input_free_polled_device(dev->polled_input);
+	devm_kfree(&client->dev, dev);
+
+	return 0;
+}
+\end{lstlisting}
+Find similarities to calls within the \texttt{probe()} function.
+\newline
+Recompile the module, load it and remove it several times to make sure
+ everything is logged in successfully or logged out.
+
+\section{Adding correct input device registration information}
+We need to add more information before registering the entry structure. This is
+ the reason why you are currently receiving alerts when loading a module:
+\begin{lstlisting}[language=bash]
+input: Unspecified device as /devices/virtual/input/input0
+\end{lstlisting}
+Add the following lines of code:
+\begin{lstlisting}[language=bash]
+input->name = "Wii Nunchuk";
+input->id.bustype = BUS_I2C;
+set_bit(EV_ABS, input->evbit);
+set_bit(ABS_X, input->absbit);
+set_bit(ABS_Y, input->absbit);
+set_bit(ABS_RX, input->absbit);
+set_bit(ABS_RY, input->absbit);
+set_bit(ABS_RZ, input->absbit);
+set_bit(EV_KEY, input->evbit);
+set_bit(BTN_C, input->keybit);
+set_bit(BTN_Z, input->keybit);
+set_bit(INPUT_PROP_ACCELEROMETER, input->propbit);
+\end{lstlisting}
+Also, add function calls that eliminate accelerometer noise and joystick noise:
+\begin{lstlisting}[language=bash]
+input_set_abs_params(input, ABS_X, 30, 220, 4, 8);
+if (!input->absinfo) {
+dev_err(&client->dev, "input->absinfo allocation failed\n");
+	goto exit_nunchuk_dev;
+}
+input_set_abs_params(input, ABS_Y, 40, 200, 4, 8);
+input_set_abs_params(input, ABS_RX, 0, 0x3ff, 4, 8);
+input_set_abs_params(input, ABS_RY, 0, 0x3ff, 4, 8);
+input_set_abs_params(input, ABS_RZ, 0, 0x3ff, 4, 8);
+\end{lstlisting}
+Declare a new \texttt{polling} function and set an interval of 50ms:
+\begin{lstlisting}[language=bash]
+polled_input->poll = nunchuk_poll;
+polled_input->poll_interval = 50;
+\end{lstlisting}
+The role of the \texttt{nunchuk\_poll} function is to calculate all states of
+ the \texttt{Nunchuk} device and to submit the event states:
+\begin{lstlisting}
+input_event(polled_input->input, EV_KEY, BTN_Z, z_pressed);
+input_event(polled_input->input, EV_KEY, BTN_C, c_pressed);
+input_report_abs(polled_input->input, ABS_RX, accelerometer[0]);
+input_report_abs(polled_input->input, ABS_RY, accelerometer[1]);
+input_report_abs(polled_input->input, ABS_RZ, accelerometer[2]);
+input_report_abs(polled_input->input, ABS_X, joystick[0]);
+input_report_abs(polled_input->input, ABS_Y, joystick[1]);
+input_sync(polled_input->input);
+\end{lstlisting}
+
+\section{Module testing}
+Testing an input device is easy when using an \texttt{evtest} application that
+ is included in the \textit{root filesystem}. Run the \texttt{evtest}
+ application as follows:
+\begin{lstlisting}
+evtest /dev/input/event0
+\end{lstlisting}
+Press different key combinations to see how specific events are logged through
+ the \texttt{evtest} application.
+
+\section{Saving work}
+Position yourself in the
+\texttt{/home/profesor/embedded\_linux/LV5/solutions/nunchuk} directory.
+Execute \texttt{Git} commands:
+\begin{lstlisting}[language=bash]
+git add nunchuk.c
+git add Makefile
+git commit -m "laboratory exercise 5 done"
+git push origin master
+\end{lstlisting}
+\end{document}
 \end{document}
