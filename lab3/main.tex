@@ -91,7 +91,7 @@ s našim uređajem.
 \newline
 \newline
 Pozicionirajte se u Linux izvorni kod koji bi trebao biti na putanji\\
-\texttt{/home/rtrk/buildroot/output/build/linux-custom}. Tu se nalazi Linux
+\texttt{/home/profesor/buildroot/output/build/linux-custom}. Tu se nalazi Linux
 izvorni kod pomoću kojega smo stvorili sliku sustava (engl. \textit{image})
 za našu \textit{Raspberry Pi} ploču koristeći \texttt{Buildroot} u laboratorijskoj
 vježbi 2. Napravite kopiju datoteke \texttt{bcm2710-rpi-3-b.dts} koja se nalazi
@@ -124,7 +124,7 @@ Nakon potrebnih izmjena \texttt{i2c1} čvor bi trebao izgledati ovako:
 \end{lstlisting}
 Nakon potrebnih promjena u datoteci stabla uređaja, pozicionirajte se u
 korijensku putanju Linux izvornog koda\\
-(\texttt{/home/rtrk/buildroot/output/build/linux-custom}).\\
+(\texttt{/home/profesor/buildroot/output/build/linux-custom}).\\
 Postavite varijable okruženja potrebne za kompiliranje \texttt{Linux} jezgre:
 \begin{lstlisting}
 export ARCH=arm
@@ -156,7 +156,7 @@ cat /proc/device-tree/soc/i2c@7e804000/nunchuk@52/status
 
 \section{Izrada osnovnog upravljačkog programa za Nunchuk}
 Sada možete krenuti s izradom upravljačkog programa za \textit{Nunchuk}.
-Unutar direktorija \texttt{/home/rtrk/embedded\_linux/LV3/solutions} stvorite
+Unutar direktorija \texttt{/home/profesor/embedded\_linux/LV3/solutions} stvorite
 direktorij imena \texttt{nunchuk}. Unutar tog direktorija stvorite dvije
 datoteke: \texttt{nunchuk.c} i \texttt{Makefile}.
 \newline
@@ -189,11 +189,11 @@ make
 \end{lstlisting}
 
 \noindent Stvoreni \texttt{nunchuk.ko} kernel modul kopirajte na \texttt{NFS} putanje
-od ploče \texttt{/home/rtrk/embedded\_linux/LV2/solutions/nfsroot/root}.
+od ploče \texttt{/home/profesor/embedded\_linux/LV2/solutions/nfsroot/root}.
 Učitajte i uklonite kernel modul koristeći naredbe \texttt{insmod} i \texttt{rmmod}.
 
 \section{Spremanje rada}
-Pozicionirajte se u direktorij \texttt{/home/rtrk/embedded\_linux/LV3/solutions/nunchuk}.
+Pozicionirajte se u direktorij \texttt{/home/profesor/embedded\_linux/LV3/solutions/nunchuk}.
 Izvršite \texttt{Git} komande:
 \begin{lstlisting}[language=bash]
 git add nunchuk.c

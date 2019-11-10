@@ -171,7 +171,7 @@ Osim samog Raspberry Pi računala, potrebna je različita dodatna oprema ovisno
 Ako na razvojnom računalu nemate vaš repozitorij \texttt{embedded\_linux},
  najprije ga klonirajte odgovarajućom naredbom s vašeg Gitlab računa u vaš
  \texttt{home} direktorij. Pozicionirajte se u direktorij
- \texttt{/home/rtrk/embedded\_linux}. Zatim povucite moguće promjene iz
+ \texttt{/home/profesor/embedded\_linux}. Zatim povucite moguće promjene iz
  izvornog repozitorija pomoću naredbe:
 \begin{lstlisting}[language=bash]
 git remote add upstream
@@ -237,14 +237,14 @@ Iako se za potrebe izgradnje Linuxa pomoću Buildroota može koristiti\\
  korisnika naredbom \texttt{make menuconfig|nconfig|xconfig}, u vježbi će se
  iskoristiti postojeća konfiguracija. Kopirajte
  \texttt{raspberrypi3\_ferit\_defconfig} datoteku iz repozitorija
- \texttt{/home/rtrk/embedded\_linux/LV2/resources} u direktorij
- \texttt{/home/rtrk/buildroot/configs}. Nadalje, kopirajte datoteke\\
+ \texttt{/home/profesor/embedded\_linux/LV2/resources} u direktorij
+ \texttt{/home/profesor/buildroot/configs}. Nadalje, kopirajte datoteke\\
  \texttt{post-build.sh} i \texttt{genimage-raspberrypi3.cfg} u direktorij\\
- \texttt{/home/rtrk/buildroot/board/raspberrypi}.\\
+ \texttt{/home/profesor/buildroot/board/raspberrypi}.\\
 \newline
 Učitajte danu konfiguraciju i
  provjerite što je sve uključeno u nju pokretanjem sljedećih naredbi u
- direktoriju \texttt{/home/rtrk/buildroot}:
+ direktoriju \texttt{/home/profesor/buildroot}:
 \begin{lstlisting}[language=bash]
 make raspberrypi3_ferit_defconfig
 make menuconfig
@@ -287,8 +287,8 @@ Ako je pretvornik ispravno prepoznat, na ekranu će se ispisati "Terminal ready"
 \newline
 \newline
 Nakon što se završi izgradnja Linuxa pomoću alata \textit{Buildroot}, u
- direktoriju \texttt{/home/rtrk/buildroot/output/images} nalazit će se sljedeće
- datoteke:
+ direktoriju \texttt{/home/profesor/buildroot/output/images} nalazit će se
+ sljedeće datoteke:
 \newline
 \dirtree{%
 	.1 images.
@@ -490,7 +490,7 @@ embedded_linux/LV2/solutions/nfsroot
 \end{lstlisting}
 Promijenite prava u dobivenom direktoriju:
 \begin{lstlisting}[language=bash]
-sudo chown -R rtrk embedded_linux/LV2/solutions/nfsroot/root
+sudo chown -R profesor embedded_linux/LV2/solutions/nfsroot/root
 \end{lstlisting}
 Instalirajte NFS server pomoću naredbe:
 \begin{lstlisting}[language=bash]
@@ -499,7 +499,7 @@ sudo apt-get install nfs-kernel-server
 Izmijenite datoteku \texttt{/etc/exports} kao \textit{root} korisnik tako što
  ćete dodati narednu liniju:
 \begin{lstlisting}[language=bash]
-/home/rtrk/embedded_linux/LV2/solutions/nfsroot
+/home/profesor/embedded_linux/LV2/solutions/nfsroot
 <IP_adresa_rpi>(rw,no_root_squash,no_subtree_check)
 \end{lstlisting}
 pri čemu je \texttt{<IP\_adresa\_rpi>} postavljena IP adresa \textit{Raspberry Pi}.
@@ -515,7 +515,7 @@ Pokrenite ploču do U-boot-a. Prije pokretanja jezgre potrebno je definirati
 \begin{lstlisting}[language=bash]
 setenv bootargs "root=/dev/nfs rw ip=<IP_adresa_rpi> 8250.nr_uarts=1
 console=ttyS0,115200
-nfsroot=<IP_adresa_pc>:/home/rtrk/embedded_linux/LV2/solutions/nfsroot"
+nfsroot=<IP_adresa_pc>:/home/profesor/embedded_linux/LV2/solutions/nfsroot"
 
 saveenv
 \end{lstlisting}
@@ -546,7 +546,7 @@ Možete provjeriti radi li mrežni datotečni sustav na način da u root direkto
  mrežnog datotečnog sustava dodate tekstualnu datoteku i u nju upišete
  proizvoljni tekst:
 \begin{lstlisting}[language=bash]
-sudo nano /home/rtrk/embedded_linux/LV2/solutions/nfsroot/root/proba.txt
+sudo nano /home/profesor/embedded_linux/LV2/solutions/nfsroot/root/proba.txt
 \end{lstlisting}
 Na Raspberry Pi bi se ista datoteka trebala nalaziti u \texttt{/root}
  direktoriju, npr. izvršite naredbu:

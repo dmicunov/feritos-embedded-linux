@@ -164,7 +164,7 @@ depending on the application:
 If you don't have your \texttt{embedded\_linux} repository on your development
  computer, first clone it with the appropriate command from your Gitlab account
  into your \textit{home} directory. Position yourself in the\\
- \texttt{/home/rtrk/embedded\_linux} directory. Then pull the possible changes
+ \texttt{/home/profesor/embedded\_linux} directory. Then pull the possible changes
  from the source repository using the command:
 \begin{lstlisting}[language=bash]
 git remote add upstream
@@ -236,13 +236,13 @@ Although it can be used to build Linux using Buildroot \\
  preferences with the \texttt{make menuconfig|nconfig|xconfig}, existing
  configuration will be used in this exercise. Copy
  \texttt{raspberrypi3\_ferit\_defconfig} file from directory
- \texttt{/home/rtrk/embedded\_linux/LV2/resources} into directory
- \texttt{/home/rtrk/buildroot/configs}. Furthermore, copy the files
+ \texttt{/home/profesor/embedded\_linux/LV2/resources} into directory
+ \texttt{/home/profesor/buildroot/configs}. Furthermore, copy the files
  \texttt{post-build.sh} and \texttt{genimage-raspberrypi3.cfg} to the
- directory \texttt{/home/rtrk/buildroot/board/raspberrypi}.\\
+ directory \texttt{/home/profesor/buildroot/board/raspberrypi}.\\
 \newline
 Load the given configuration and see what is included in it by running the
- following commands in the \texttt{/home/rtrk/buildroot} directory:
+ following commands in the \texttt{/home/profesor/buildroot} directory:
 \begin{lstlisting}[language=bash]
 make raspberrypi3_ferit_defconfig
 make menuconfig
@@ -285,7 +285,7 @@ If the converter is correctly recognized, “Terminal ready” will be displayed
 \newline
 \newline
 Once the Linux build is completed using the Buildroot tool, the following files
- will be located in the \texttt{/home/rtrk/buildroot/output/images} directory:
+ will be located in the \texttt{/home/profesor/buildroot/output/images} directory:
 \newline
 \dirtree{%
 	.1 images.
@@ -481,7 +481,7 @@ embedded_linux/LV2/solutions/nfsroot
 \end{lstlisting}
 Change the rights in the directory:
 \begin{lstlisting}[language=bash]
-sudo chown -R rtrk embedded_linux/LV2/solutions/nfsroot/root
+sudo chown -R profesor embedded_linux/LV2/solutions/nfsroot/root
 \end{lstlisting}
 Install the NFS Server using command:
 \begin{lstlisting}[language=bash]
@@ -490,7 +490,7 @@ sudo apt-get install nfs-kernel-server
 Modify the \texttt{/etc/exports} file as a root user by adding the following
  line:
 \begin{lstlisting}[language=bash]
-/home/rtrk/embedded_linux/LV2/solutions/nfsroot
+/home/profesor/embedded_linux/LV2/solutions/nfsroot
 <IP_address_rpi>(rw,no_root_squash,no_subtree_check)
 \end{lstlisting}
 wherein the \texttt{<IP\_adresa\_rpi>} is the Raspberry Pi IP address. Again
@@ -505,7 +505,7 @@ Run the board to the U-boot. Before launching the kernel, it is necessary to
 \begin{lstlisting}[language=bash]
 setenv bootargs "root=/dev/nfs rw ip=<IP_address_rpi> 8250.nr_uarts=1
 console=ttyS0,115200
-nfsroot=<IP_address_pc>:/home/rtrk/embedded_linux/LV2/solutions/nfsroot"
+nfsroot=<IP_address_pc>:/home/profesor/embedded_linux/LV2/solutions/nfsroot"
 
 saveenv
 \end{lstlisting}
@@ -535,7 +535,7 @@ cat /var/log/syslog
 You can check that the network file system works by adding a text file to the
  root directory of the network file system and typing arbitrary text into it:
 \begin{lstlisting}[language=bash]
-sudo nano /home/rtrk/embedded_linux/LV2/solutions/nfsroot/root/test.txt
+sudo nano /home/profesor/embedded_linux/LV2/solutions/nfsroot/root/test.txt
 \end{lstlisting}
 On the Raspberry Pi, the same file should be in the \texttt{/root} directory,
  for example, execute the command:

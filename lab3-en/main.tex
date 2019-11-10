@@ -88,7 +88,7 @@ to the file already used for this board, but will create a special device tree
 for our board with our device.
 
 Go to the directory where Linux source code is, that should be in the path\\
-\texttt{/home/rtrk/buildroot/output/build/linux-custom}. Make a copy of\\
+\texttt{/home/profesor/buildroot/output/build/linux-custom}. Make a copy of\\
 \texttt{bcm2710-rpi-3-b.dts} file located in the \texttt{arch/arm/boot/dts} and
 name it \texttt{bcm2710-rpi-3-b-custom.dts}. Make changes to the
 \texttt{Makefile} in the same directory and allow the new dts file to be
@@ -118,7 +118,7 @@ After the necessary modifications, the \texttt{i2c1} node should look like this:
 \end{lstlisting}
 After making the necessary changes to the device tree file, position yourself
 in the root path of the Linux source code:\\
-(\texttt{/home/rtrk/buildroot/output/build/linux-custom}).\\
+(\texttt{/home/profesor/buildroot/output/build/linux-custom}).\\
 Set the environment variables required to compile the Linux kernel:
 \begin{lstlisting}
 export ARCH=arm
@@ -149,7 +149,7 @@ cat /proc/device-tree/soc/i2c@7e804000/nunchuk@52/status
 
 \section{Writing simple device driver}
 You can now start creating a driver for \textit{Nunchuk}. In the
-\texttt{/home/rtrk/embedded\_linux/LV3/solutions} directory, create a
+\texttt{/home/profesor/embedded\_linux/LV3/solutions} directory, create a
 \texttt{nunchuk} directory. Create two files inside that directory:
  \texttt{nunchuk.c} and \texttt{Makefile}.
 \newline
@@ -179,11 +179,11 @@ Compile the kernel module (\texttt{ARCH} and \texttt{CROSS\_COMPILE} environment
 make
 \end{lstlisting}
 Copy the created nunchuk.ko kernel module to the NFS path\\
-\texttt{/home/rtrk/embedded\_linux/LV2/solutions/nfsroot/root}. Insert and
+\texttt{/home/profesor/embedded\_linux/LV2/solutions/nfsroot/root}. Insert and
  remove kernel module using the \texttt{insmod} and \texttt{rmmod} commands.
 
 \section{Saving work}
-Position yourself in the \texttt{/home/rtrk/embedded\_linux/LV3/solutions/nunchuk}
+Position yourself in the \texttt{/home/profesor/embedded\_linux/LV3/solutions/nunchuk}
  directory.
 Execute \texttt{Git} Commands:
 \begin{lstlisting}
