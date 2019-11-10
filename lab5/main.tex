@@ -167,11 +167,17 @@ input->dev.parent = &client->dev;
 \end{lstlisting}
 Sada imamo sve što je potrebno za implementiranje funkcije \texttt{remove()}:
 \begin{lstlisting}
-struct nunchuk_dev *nunchuk;
-dev = i2c_get_clientdata(client);
-input_unregister_polled_device(nunchuk->polled_input);
-input_free_polled_device(nunchuk->polled_input);
-devm_kfree(&nunchuk->dev, dev);
+static int
+nunchuk_remove(struct i2c_client *client)
+{
+	struct nunchuk_dev *dev;
+	dev = i2c_get_clientdata(client);
+	input_unregister_polled_device(dev->polled_input);
+	input_free_polled_device(dev->polled_input);
+	devm_kfree(&client->dev, dev);
+
+	return 0;
+}
 \end{lstlisting}
 Pronađite analogije s pozivima unutar funkcije \texttt{probe()}.
 \newline
